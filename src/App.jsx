@@ -4,6 +4,7 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
+import { quizLoader } from "./pages/Quiz/Loader";
 //#endregion
 
 //#region pages
@@ -29,6 +30,7 @@ const router = createBrowserRouter([
   {
     path: "/quiz/:quizId",
     element: <Summary />,
+    loader: quizLoader,
   },
 ]);
 
