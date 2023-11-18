@@ -11,6 +11,7 @@ import Home from "./pages/Home";
 import SignIn from "./pages/SignIn";
 import Dashboard from "./pages/Dashboard";
 //#endregion
+import Summary from "./pages/Quiz/Summary";
 
 const router = createBrowserRouter([
   {
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
   {
     path: "/dashboard",
     element: <Dashboard />,
+  },
+  {
+    path: "/quiz/:quizId",
+    element: <Summary />,
   },
 ]);
 
