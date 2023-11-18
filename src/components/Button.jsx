@@ -20,7 +20,8 @@ export function Button({ icon, text, onClick, style, textStyle }) {
       buttonType = "text-white p-0 hover:text-accent";
       break;
     default:
-      buttonType = "bg-secondary text-primary";
+      buttonType =
+        "bg-secondary text-primary  hover:bg-primary hover:text-secondary";
       break;
   }
   return (
