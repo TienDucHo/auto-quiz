@@ -1,6 +1,6 @@
-import AppLogo from "../../components/AppLogo";
-import { Button } from "../../components/Button";
+import { Button } from "./Button";
 import { FaArrowRightFromBracket, FaUser } from "react-icons/fa6";
+import AppLogo from "./AppLogo";
 export function NavBar() {
   return (
     <nav className="flex justify-between items-center">
