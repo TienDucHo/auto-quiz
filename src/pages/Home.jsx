@@ -1,6 +1,6 @@
 //#region import
-import { Fragment } from "react";
-import { Link } from "react-router-dom";
+import { Fragment, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 //#region images
 import HeroImage from "../assets/hero.svg";
 import Line from "../assets/lines.svg";
@@ -14,6 +14,8 @@ import { node, string } from "prop-types";
 import { Button } from "../components/Button";
 import { FaCoffee } from "react-icons/fa";
 import AppLogo from "../components/AppLogo";
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { getAuth } from "firebase/auth";
 //#endregion
 
 //#region data
@@ -38,7 +40,7 @@ const sections = [
     body: (
       <div className="text-white px-12 flex flex-col text-center gap-y-4 lg:text-start lg:flex-row justify-between items-center">
         <img
-          className="w-[12rem] lg:w-[28rem]"
+          className="w-[20rem] lg:w-[28rem]"
           src={WhatDoWeDo}
           alt="What do we do?"
         />
@@ -84,7 +86,7 @@ const sections = [
     body: (
       <div className="flex flex-col gap-12">
         <img
-          className="h-[12rem] md:h-[20rem]"
+          className="h-[18rem] md:h-[20rem]"
           src={WhatDoWeWant}
           alt="What do we want?"
         />
@@ -94,7 +96,7 @@ const sections = [
             style="primary"
             textStyle="bold"
             icon={<FaCoffee />}
-            onClick={() => {}}
+            onClick={() => { }}
           />
           <span className="opacity-70">We appreciate it</span>
         </div>
@@ -147,9 +149,19 @@ function Section({ title, body }) {
 }
 //#endregion
 
+
 export default function Home() {
+  const auth = getAuth();
+  const navigate = useNavigate()
+  const [user, loading] = useAuthState(auth);
+
+  useEffect(() => {
+    if (loading) return;
+    if (user) navigate("/dashboard")
+  }, [user, navigate, loading])
+
   return (
-    <div className="bg-black text-white flex flex-col items-center gap-12 py-8 md:py-12">
+    !loading && <div className="bg-black text-white flex flex-col items-center gap-12 py-8 md:py-12">
       {/* Nav Bar */}
       <nav className="px-8 pb-8 w-full flex justify-between lg:px-12">
         <AppLogo />
