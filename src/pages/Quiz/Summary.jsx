@@ -1,11 +1,6 @@
-import AppLogo from "../../components/AppLogo";
+import { NavBar } from "../../components/NavBar";
 import { Button } from "../../components/Button";
-import {
-  FaArrowRightFromBracket,
-  FaUser,
-  FaPlus,
-  FaChevronLeft,
-} from "react-icons/fa6";
+import { FaPlus, FaChevronLeft } from "react-icons/fa6";
 import { useLoaderData } from "react-router";
 import { bool, string, number } from "prop-types";
 import { twMerge } from "tailwind-merge";
@@ -93,21 +88,7 @@ export default function Summary() {
   return (
     <div className="py-4 px-12 min-h-[100dvh] bg-black text-white flex flex-col gap-12">
       {/* Nav Bar */}
-      <nav className="flex justify-between items-center">
-        <AppLogo variant={"light"} />
-        <div className="buttonContainer flex gap-2">
-          <Button
-            text="Logout"
-            icon={<FaArrowRightFromBracket />}
-            onClick={() => {}}
-            style={"transparent"}
-          />
-          {/* Avatar */}
-          <div className="flex items-center justify-center p-4 rounded-full bg-secondary">
-            <FaUser />
-          </div>
-        </div>
-      </nav>
+      <NavBar />
       {/* Header */}
       <div className="flex justify-between items-center">
         <div className="flex gap-4 items-center">
