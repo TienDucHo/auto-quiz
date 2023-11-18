@@ -3,7 +3,6 @@ import { Fragment, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 //#region images
 import HeroImage from "../assets/hero.svg";
-import Line from "../assets/lines.svg";
 import WhatDoWeDo from "../assets/what_do_we_do.svg";
 import Thea from "../assets/thea.png";
 import Duc from "../assets/duc.png";
