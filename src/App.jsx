@@ -4,11 +4,16 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
+import Summary from "./pages/Quiz/Summary";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Home />,
+  },
+  {
+    path: "/quiz/:quizId",
+    element: <Summary />,
   },
 ]);
 
