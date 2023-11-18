@@ -1,4 +1,5 @@
 import "./App.css";
+import Home from "./pages/Home";
 import {
   createBrowserRouter,
   RouterProvider,
@@ -7,9 +8,7 @@ import {
 const router = createBrowserRouter([
   {
     path: "/",
-    element: (
-      <div className="text-primary font-bold">Hello world!</div>
-    ),
+    element: <Home />,
   },
 ]);
 
