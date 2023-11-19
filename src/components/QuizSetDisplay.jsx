@@ -6,7 +6,13 @@ import { FaEdit } from "react-icons/fa";
 import { useState } from "react";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
+import { getAuth } from "@firebase/auth";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { db } from "../auth/Config";
+import { doc, deleteDoc, updateDoc } from "@firebase/firestore";
 //#endregion
+
+const auth = getAuth();
 
 /**
  * Component for displaying a quiz set.
@@ -14,17 +20,60 @@ import { useNavigate } from "react-router-dom";
  * @component
  * @param {Object} props - The component props.
  * @param {string} props.quizName - The name of the quiz set.
+ * @param {string} props.id - The id of the quiz set.
+ * @param {func} props.setQuizSets - The function to update the quiz set list
+ * @param {number} props.index - The index in side the quiz set list
+ * @param {array} props.quizSets - The parent's quiz set list
  * @returns {JSX.Element} The rendered component.
  */
-const QuizSetDisplay = ({ quizName }) => {
+const QuizSetDisplay = ({
+  quizName,
+  id,
+  index,
+  quizSets,
+  setQuizSets,
+}) => {
   const navigate = useNavigate();
+  const [user] = useAuthState(auth);
   const [isActive, setIsActive] = useState(false);
   const [renameWanted, setRenameWanted] = useState(false);
+  const [newName, setNewName] = useState("");
+
+  const handleRename = (e) => {
+    e.stopPropagation();
+    // update UI
+    const thisQuizSet = { ...quizSets[index], name: newName };
+    const newQuizSets = [...quizSets];
+    newQuizSets[index] = thisQuizSet;
+    setQuizSets(newQuizSets);
+
+    // update DB
+    const renameQuiz = async (user) => {
+      await updateDoc(doc(db, "users", user.uid, "quizSets", id), {
+        name: newName,
+      });
+    };
+
+    renameQuiz(user);
+    setRenameWanted(false);
+    setIsActive(false);
+  };
+
+  const handleDelete = (e) => {
+    e.stopPropagation();
+    const deleteQuiz = async (user) => {
+      await deleteDoc(doc(db, "users", user.uid, "quizSets", id));
+    };
+    deleteQuiz(user);
+    quizSets.splice(index, 1);
+    setQuizSets([...quizSets]);
+    setIsActive(false);
+  };
 
   return (
     <div
       onClick={() => {
-        navigate(`/quiz/${quizName}`);
+        if (!isActive) navigate(`/quiz/${id}`);
       }}
       className={`min-h-[16rem] rounded-2xl text-white font-bold text-lg lg:text-xl w-full flex items-center justify-center bg-primary transition  ease-in-out duration-300 relative cursor-pointer ${
         !isActive ? "hover:bg-secondary hover:text-black" : ""
@@ -57,10 +106,7 @@ const QuizSetDisplay = ({ quizName }) => {
           </button>
           <button
             className="flex gap-x-2 items-center text-white hover:text-accent1"
-            onClick={(e) => {
-              e.stopPropagation();
-              alert("Delete in Firebase");
-            }}
+            onClick={handleDelete}
           >
             <FaTrash /> Delete
           </button>
@@ -78,15 +124,15 @@ const QuizSetDisplay = ({ quizName }) => {
             onClick={(e) => {
               e.stopPropagation();
             }}
+            value={newName}
+            onChange={(e) => {
+              setNewName(e.currentTarget.value);
+            }}
             className="outline-none text-black font-normal px-4 py-2 rounded-2xl"
           />
           <button
             className="hover:text-accent2"
-            onClick={(e) => {
-              e.stopPropagation();
-              alert("Push to Firebase");
-              setRenameWanted(false);
-            }}
+            onClick={handleRename}
           >
             Save
           </button>
@@ -97,7 +143,11 @@ const QuizSetDisplay = ({ quizName }) => {
 };
 
 QuizSetDisplay.propTypes = {
+  id: PropTypes.string.isRequired,
   quizName: PropTypes.string.isRequired,
+  setQuizSets: PropTypes.func.isRequired,
+  quizSets: PropTypes.array.isRequired,
+  index: PropTypes.number.isRequired,
 };
 
 export default QuizSetDisplay;

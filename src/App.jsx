@@ -4,17 +4,17 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
-import { quizLoader } from "./pages/Quiz/Loader";
 
 //#endregion
 
 //#region pages
+import { quizLoader, attemptLoader } from "./pages/Quiz/Loader";
 import Home from "./pages/Home";
 import SignIn from "./pages/SignIn";
 import Dashboard from "./pages/Dashboard";
 import Create from "./pages/Quiz/Create";
 import Summary from "./pages/Quiz/Summary";
-import QuizViewPage from "./pages/Quiz/QuizViewPage";
+import NewAttempt from "./pages/NewAttempt";
 //#endregion
 
 const router = createBrowserRouter([
@@ -41,9 +41,20 @@ const router = createBrowserRouter([
     loader: quizLoader,
   },
   {
+<<<<<<< HEAD
     path: "/quiz-view-page",
     element: <QuizViewPage />,
 
+=======
+    path: "/quiz/:quizId/:attemptId",
+    element: <NewAttempt />,
+    loader: attemptLoader,
+  },
+  {
+    path: "/quiz/:quizId/attempt-create",
+    element: <NewAttempt />,
+    loader: attemptLoader,
+>>>>>>> ef1eaa29055a0fd09ffa2fa30ca2111ff1ada47d
   },
 ]);
 

@@ -5,3 +5,20 @@
 :root {
   background-color: #141e26;
 }
+
+@layer base {
+  body {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  input::placeholder {
+    color: #9ac5d3;
+    opacity: 1; /* Firefox */
+  }
+
+  input::invalid {
+    border: 2px solid #f77474;
+  }
+}
