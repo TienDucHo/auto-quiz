@@ -13,8 +13,8 @@ import Home from "./pages/Home";
 import SignIn from "./pages/SignIn";
 import Dashboard from "./pages/Dashboard";
 import Create from "./pages/Quiz/Create";
-//#endregion
 import Summary from "./pages/Quiz/Summary";
+//#endregion
 
 const router = createBrowserRouter([
   {
@@ -33,7 +33,7 @@ const router = createBrowserRouter([
     path: "/quiz-create",
     element: <Create />,
   },
-  
+
   {
     path: "/quiz/:quizId",
     element: <Summary />,
@@ -42,7 +42,11 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <div>
+      <RouterProvider router={router} />
+    </div>
+  );
 }
 
 export default App;

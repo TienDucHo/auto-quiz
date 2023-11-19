@@ -2,15 +2,22 @@ import { NavBar } from "../../components/NavBar";
 import { Button } from "../../components/Button";
 import { FaPlus, FaChevronLeft } from "react-icons/fa6";
 import { useLoaderData } from "react-router";
-import { bool, string, number } from "prop-types";
+import { useNavigate } from "react-router-dom";
+import { bool, string, number, arrayOf, object } from "prop-types";
 import { twMerge } from "tailwind-merge";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { useEffect } from "react";
+import { getAuth } from "firebase/auth";
+import { motion, AnimatePresence } from "framer-motion";
+
+const auth = getAuth();
 
 AttemptRow.propTypes = {
   isHeader: bool,
   index: number,
   attemptName: string,
   attemptScore: string,
-  attemptNumQuestions: string,
+  attemptNumQuestions: number,
 };
 
 function AttemptRow({
@@ -20,17 +27,31 @@ function AttemptRow({
   attemptScore,
   attemptNumQuestions,
 }) {
-  console.log(index);
+  const rowVariants = {
+    hidden: {
+      y: -20,
+      opacity: 0,
+    },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        duration: 1,
+      },
+    },
+  };
   return (
-    <ul
+    <motion.ul
       className={twMerge(
-        "flex justify-between items-center rounded-2xl px-6 py-4 hover:brightness-125 active:brightness-75",
+        "flex justify-between items-center rounded-2xl px-6 py-4",
         isHeader
           ? "border-secondary border-[1px]"
           : index % 2 === 0
           ? "bg-primary text-secondary"
-          : "bg-secondary text-primary"
+          : "bg-secondary text-primary",
+        !isHeader && "hover:brightness-125 active:brightness-75"
       )}
+      variants={rowVariants}
     >
       <li className="w-20 text-left">
         {isHeader ? "Attempt" : attemptName}
@@ -41,22 +62,42 @@ function AttemptRow({
       <li className="w-20 text-right">
         {isHeader ? "Questions" : attemptNumQuestions}
       </li>
-    </ul>
+    </motion.ul>
   );
 }
 
 AttemptTable.propTypes = {
-  attempts: [],
+  attempts: arrayOf(object),
 };
 
 function AttemptTable({ attempts }) {
+  const tableVariants = {
+    hidden: {
+      opacity: 0,
+    },
+    visible: {
+      opacity: 1,
+      transition: {
+        delayChildren: 0,
+        staggerChildren: 0.2,
+      },
+    },
+  };
   return (
-    <div className="flex flex-col gap-4">
-      <AttemptRow isHeader={true} />
-      {attempts.map((elem, id) => {
-        return <AttemptRow key={id} index={id} {...elem} />;
-      })}
-    </div>
+    <AnimatePresence>
+      <motion.div
+        className="flex flex-col gap-4"
+        variants={tableVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <AttemptRow isHeader={true} />
+
+        {attempts.map((elem, id) => {
+          return <AttemptRow key={id} index={id} {...elem} />;
+        })}
+      </motion.div>
+    </AnimatePresence>
   );
 }
 
@@ -85,14 +126,35 @@ const attempts = [
 
 export default function Summary() {
   const { name } = useLoaderData();
+  const [user, loading] = useAuthState(auth);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (loading) return;
+    if (!user) {
+      console.log("Haiz");
+      navigate("/");
+    }
+  }, [user, loading, navigate]);
+
   return (
     <div className="py-4 px-12 min-h-[100dvh] bg-black text-white flex flex-col gap-12">
       {/* Nav Bar */}
       <NavBar />
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <motion.div
+        className="flex justify-between items-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+      >
         <div className="flex gap-4 items-center">
-          <Button icon={<FaChevronLeft />} style={"transparent"} />
+          <Button
+            icon={<FaChevronLeft />}
+            style={"transparent"}
+            onClick={() => {
+              navigate("/dashboard");
+            }}
+          />
           <h2 className="text-3xl font-bold text-secondary">
             {name}
           </h2>
@@ -102,7 +164,7 @@ export default function Summary() {
           icon={<FaPlus />}
           style={"secondary"}
         />
-      </div>
+      </motion.div>
       {/* Attempt Table */}
       <AttemptTable attempts={attempts} />
     </div>
