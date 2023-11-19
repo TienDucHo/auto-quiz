@@ -2,6 +2,7 @@ import { twMerge } from "tailwind-merge";
 import { node, string, func } from "prop-types";
 
 Button.propTypes = {
+  className: string,
   icon: node,
   text: string,
   onClick: func,
