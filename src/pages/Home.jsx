@@ -38,7 +38,7 @@ const sections = [
   {
     title: "What do we do?",
     body: (
-      <div className="text-white px-12 flex flex-col text-center gap-y-4 lg:text-start lg:flex-row justify-between items-center">
+      <div className="text-white px-12 flex flex-col text-center gap-y-8 lg:text-start lg:flex-row justify-between items-center">
         <img
           className="w-[20rem] lg:w-[28rem]"
           src={WhatDoWeDo}
@@ -58,7 +58,7 @@ const sections = [
   {
     title: "Who are we?",
     body: (
-      <div className="text-white flex flex-col gap-8 justify-between items-center">
+      <div className="text-white flex flex-col gap-12 justify-between items-center">
         <p className="max-w-[24rem] text-center text-lg lg:text-xl">
           We are three students who are too tired during our Midterm
           season, and wish there was something like{" "}
