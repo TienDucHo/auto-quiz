@@ -25,7 +25,7 @@ const Dashboard = () => {
     const curUser = auth.currentUser;
 
     // TODO: GET QUIZ SETS FROM FIREBASE
-    const quizSetList = ["Quiz 1", "Quiz 2", "Quiz 3", "Quiz 4", "Quiz 5", "Quiz 1", "Quiz 2", "Quiz 3", "Quiz 4", "Quiz 5"]
+    const quizSetList = ["Quiz 1", "Quiz 2", "Quiz 3", "Quiz 4", "Quiz 5"]
 
     useEffect(() => {
         if (!user) navigate("/")
@@ -72,9 +72,18 @@ const Dashboard = () => {
     return <div className="bg-black p-12 flex flex-col gap-y-12 md:gap-y-16">
         <NavBar onClick={handleClick} profilePic={curUser != null ? curUser.photoURL : null} />
         <div className="text-secondary font-bold flex justify-between">
-            <Link to="/dashboard" className="text-3xl lg:text-4xl hover:text-accent transition ease-in-out">Dashboard</Link>
-            {/* icon, text, onClick, style, textStyle */}
-            <Button style="secondary" text="Add" icon={<IoAddOutline className="font-black text-2xl" />} />
+            <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 1 }}>
+                <Link to="/dashboard" className="text-3xl lg:text-4xl hover:text-accent transition ease-in-out">Dashboard</Link>
+            </motion.div>
+            <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 1 }}>
+                <Button style="secondary" text="Add" icon={<IoAddOutline className="font-black text-2xl" />} />
+            </motion.div>
         </div>
         <motion.div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3"
             variants={containerVariants}
