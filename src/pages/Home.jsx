@@ -238,7 +238,10 @@ export default function Home() {
 
         {sections.map((elem, id) => {
           return (
-            <div key={id} className="flex flex-col items-center">
+            <div
+              key={id}
+              className="flex flex-col items-center gap-y-4 md:gap-y-8"
+            >
               <motion.svg
                 width="220"
                 height="220"
