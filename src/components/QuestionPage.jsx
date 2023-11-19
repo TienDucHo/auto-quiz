@@ -14,7 +14,7 @@ const QuestionPage = ({ list, question, questionIndex }) => {
         <div className="flex flex-col gap-y-4 lg:gap-y-6 text-lg">
             {answersList.map((answer, index) => {
                 return <div key={index} className="flex gap-x-4 items-center">
-                    <input className="w-6 h-6 rounded-2xl bg-white appearance-none checked:bg-accent" type="radio" id={answer} name={questionNum} value={answer} />
+                    <input className="w-6 h-6 rounded-2xl cursor-pointer bg-white appearance-none checked:bg-accent" type="radio" id={answer} name={questionNum} value={answer} />
                     <label htmlFor="child">{answer}</label>
                 </div>
             })}
