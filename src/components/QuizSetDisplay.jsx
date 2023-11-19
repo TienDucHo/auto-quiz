@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { getAuth } from "@firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { db } from "../auth/Config";
-import { doc, deleteDoc } from "@firebase/firestore";
+import { doc, deleteDoc, updateDoc } from "@firebase/firestore";
 //#endregion
 
 const auth = getAuth();
@@ -37,8 +37,27 @@ const QuizSetDisplay = ({
   const [user] = useAuthState(auth);
   const [isActive, setIsActive] = useState(false);
   const [renameWanted, setRenameWanted] = useState(false);
+  const [newName, setNewName] = useState("");
 
-  // const handleRename = () => {};
+  const handleRename = (e) => {
+    e.stopPropagation();
+    // update UI
+    const thisQuizSet = { ...quizSets[index], name: newName };
+    const newQuizSets = [...quizSets];
+    newQuizSets[index] = thisQuizSet;
+    setQuizSets(newQuizSets);
+
+    // update DB
+    const renameQuiz = async (user) => {
+      await updateDoc(doc(db, "users", user.uid, "quizSets", id), {
+        name: newName,
+      });
+    };
+
+    renameQuiz(user);
+    setRenameWanted(false);
+    setIsActive(false);
+  };
 
   const handleDelete = (e) => {
     e.stopPropagation();
@@ -105,15 +124,15 @@ const QuizSetDisplay = ({
             onClick={(e) => {
               e.stopPropagation();
             }}
+            value={newName}
+            onChange={(e) => {
+              setNewName(e.currentTarget.value);
+            }}
             className="outline-none text-black font-normal px-4 py-2 rounded-2xl"
           />
           <button
             className="hover:text-accent2"
-            onClick={(e) => {
-              e.stopPropagation();
-              alert("Push to Firebase");
-              setRenameWanted(false);
-            }}
+            onClick={handleRename}
           >
             Save
           </button>
