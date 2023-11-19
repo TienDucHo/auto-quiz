@@ -1,9 +1,8 @@
 //#region import
-import { Fragment, useEffect } from "react";
+import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 //#region images
 import HeroImage from "../assets/hero.svg";
-import Line from "../assets/lines.svg";
 import WhatDoWeDo from "../assets/what_do_we_do.svg";
 import Thea from "../assets/thea.png";
 import Duc from "../assets/duc.png";
@@ -16,6 +15,7 @@ import { FaCoffee } from "react-icons/fa";
 import AppLogo from "../components/AppLogo";
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { getAuth } from "firebase/auth";
+import { motion } from "framer-motion";
 //#endregion
 
 //#region data
@@ -149,11 +149,23 @@ function Section({ title, body }) {
 }
 //#endregion
 
-
 export default function Home() {
   const auth = getAuth();
   const navigate = useNavigate()
   const [user, loading] = useAuthState(auth);
+  const draw = {
+    hidden: { pathLength: 0, opacity: 0 },
+    visible: (duration) => {
+      return {
+        pathLength: 1.5,
+        opacity: 1,
+        transition: {
+          pathLength: { type: "spring", duration: duration, bounce: 0 },
+          opacity: { duration: 0.01 }
+        }
+      };
+    }
+  };
 
   useEffect(() => {
     if (loading) return;
@@ -177,7 +189,10 @@ export default function Home() {
       <div className="relative md:static p-4 lg:p-12 min-h-[24rem] flex flex-col md:flex-row md:h-[24rem] justify-center items-center md:justify-between w-full bg-secondary text-black ">
         {/* Hero Text */}
 
-        <div className="absolute p-4 md:p-0 left-0 my-auto z-1 md:static md:w-[28rem] flex flex-col gap-4 items-center md:items-start">
+        <motion.div className="absolute p-4 md:p-0 left-0 my-auto z-1 md:static md:w-[28rem] flex flex-col gap-4 items-center md:items-start"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 1 }}>
           <h1 className="text-5xl font-bold">
             Auto <span className="text-accent"> Quiz </span>
           </h1>
@@ -186,21 +201,56 @@ export default function Home() {
             effortless learning. Our website auto-generates quizzes
             from PDFs, making knowledge assessment a breeze
           </p>
-        </div>
+        </motion.div>
         {/* Hero Image */}
-        <img
+        <motion.img
           className="absolute md:static top-0 left-0 z-0 w-full opacity-[16%] md:w-[20rem] h-full md:opacity-100 object-contain md:object-fill lg:w-[28rem]"
           src={HeroImage}
           alt="Hero"
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 1 }}
         />
       </div>
 
       {sections.map((elem, id) => {
         return (
-          <Fragment key={id}>
-            <img className="h-[12rem]" src={Line} alt="Line" />
-            <Section title={elem.title} body={elem.body} />
-          </Fragment>
+          <div key={id} className="flex flex-col items-center">
+            <motion.svg
+              width="220"
+              height="220"
+              viewBox="0 0 220 220"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}>
+              <motion.line
+                x1="50%"
+                y1="0%"
+                x2="50%"
+                y2="100%"
+                stroke="#CBD8DF"
+                variants={draw}
+                strokeWidth={2}
+                custom={5}
+              />
+              <motion.circle
+                cx="50%"
+                cy="50%"
+                r="6"
+                stroke="#CBD8DF"
+                fill="#141E26"
+                strokeWidth={2}
+                variants={draw}
+                custom={2} />
+            </motion.svg>
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              viewport={{ once: true }}>
+              <Section title={elem.title} body={elem.body} />
+            </motion.div>
+          </div>
         );
       })}
     </div>
