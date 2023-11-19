@@ -176,7 +176,7 @@ export default function Home() {
     !loading && <div className="bg-black text-white flex flex-col items-center gap-12 py-8 md:py-12">
       {/* Nav Bar */}
       <nav className="px-8 pb-8 w-full flex justify-between lg:px-12">
-        <AppLogo />
+        <AppLogo variant={"light"}/>
         <Link
           to="/sign-in"
           className="font-medium hover:text-secondary transitions duration-300 ease-in-out text-lg lg:text-xl"
