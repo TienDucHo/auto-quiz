@@ -21,22 +21,24 @@ export function NavBar() {
       });
   };
   return (
-    <nav className="flex justify-between items-center">
-      <AppLogo variant={"light"} />
-      <div className="buttonContainer flex gap-x-4">
-        <Button
-          text="Logout"
-          icon={<FaArrowRightFromBracket />}
-          onClick={handleClick}
-          style={"transparent"}
-        />
-        {/* Avatar */}
-        <img
-          className="flex items-center justify-center w-14 rounded-full bg-secondary"
-          src={curUser.photoURL}
-          alt="Profile picture"
-        ></img>
-      </div>
-    </nav>
+    curUser && (
+      <nav className="flex justify-between items-center">
+        <AppLogo variant={"light"} />
+        <div className="buttonContainer flex gap-x-4">
+          <Button
+            text="Logout"
+            icon={<FaArrowRightFromBracket />}
+            onClick={handleClick}
+            style={"transparent"}
+          />
+          {/* Avatar */}
+          <img
+            className="flex items-center justify-center w-14 rounded-full bg-secondary"
+            src={curUser.photoURL}
+            alt="Profile picture"
+          ></img>
+        </div>
+      </nav>
+    )
   );
 }

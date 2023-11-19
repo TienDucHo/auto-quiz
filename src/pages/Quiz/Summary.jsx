@@ -2,8 +2,14 @@ import { NavBar } from "../../components/NavBar";
 import { Button } from "../../components/Button";
 import { FaPlus, FaChevronLeft } from "react-icons/fa6";
 import { useLoaderData } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { bool, string, number, arrayOf, object } from "prop-types";
 import { twMerge } from "tailwind-merge";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { useEffect } from "react";
+import { getAuth } from "firebase/auth";
+
+const auth = getAuth();
 
 AttemptRow.propTypes = {
   isHeader: bool,
@@ -20,7 +26,6 @@ function AttemptRow({
   attemptScore,
   attemptNumQuestions,
 }) {
-  console.log(index);
   return (
     <ul
       className={twMerge(
@@ -85,6 +90,17 @@ const attempts = [
 
 export default function Summary() {
   const { name } = useLoaderData();
+  const [user, loading] = useAuthState(auth);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (loading) return;
+    if (!user) {
+      console.log("Haiz");
+      navigate("/");
+    }
+  }, [user, loading, navigate]);
+
   return (
     <div className="py-4 px-12 min-h-[100dvh] bg-black text-white flex flex-col gap-12">
       {/* Nav Bar */}
