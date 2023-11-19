@@ -9,6 +9,9 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useEffect } from "react";
 import { getAuth } from "firebase/auth";
 import { motion, AnimatePresence } from "framer-motion";
+import { collection, query, getDocs } from "firebase/firestore";
+import { db } from "../../auth/Config";
+import { useState } from "react";
 
 const auth = getAuth();
 
@@ -18,15 +21,19 @@ AttemptRow.propTypes = {
   attemptName: string,
   attemptScore: string,
   attemptNumQuestions: number,
+  quizId: string,
+  id: string,
 };
 
 function AttemptRow({
   isHeader,
   index,
-  attemptName,
   attemptScore,
   attemptNumQuestions,
+  quizId,
+  id,
 }) {
+  const navigate = useNavigate();
   const rowVariants = {
     hidden: {
       y: -20,
@@ -51,10 +58,13 @@ function AttemptRow({
           : "bg-secondary text-primary",
         !isHeader && "hover:brightness-125 active:brightness-75"
       )}
+      onClick={() => {
+        navigate(`/quiz/${quizId}/attempt/${id}`);
+      }}
       variants={rowVariants}
     >
       <li className="w-20 text-left">
-        {isHeader ? "Attempt" : attemptName}
+        {isHeader ? "Attempt" : `Attempt ${index}`}
       </li>
       <li className="w-20 text-center">
         {isHeader ? "Score" : attemptScore}
@@ -94,39 +104,24 @@ function AttemptTable({ attempts }) {
         <AttemptRow isHeader={true} />
 
         {attempts.map((elem, id) => {
-          return <AttemptRow key={id} index={id} {...elem} />;
+          return (
+            <AttemptRow
+              key={id}
+              index={id}
+              {...elem}
+              attemptNumQuestions={elem.questions.length}
+            />
+          );
         })}
       </motion.div>
     </AnimatePresence>
   );
 }
 
-const attempts = [
-  {
-    attemptName: "Attempt 1",
-    attemptScore: "51%",
-    attemptNumQuestions: 10,
-  },
-  {
-    attemptName: "Attempt 3",
-    attemptScore: "51%",
-    attemptNumQuestions: 10,
-  },
-  {
-    attemptName: "Attempt 4",
-    attemptScore: "25%",
-    attemptNumQuestions: 5,
-  },
-  {
-    attemptName: "Attempt 5",
-    attemptScore: "51%",
-    attemptNumQuestions: 10,
-  },
-];
-
 export default function Summary() {
   const { id, name } = useLoaderData();
   const [user, loading] = useAuthState(auth);
+  const [attempts, setAttempts] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -135,6 +130,31 @@ export default function Summary() {
     if (!user) {
       console.log("Haiz");
       navigate("/");
+    } else {
+      const getAttempts = async (user) => {
+        const newAttemptList = [];
+        const q = query(
+          collection(
+            db,
+            "users",
+            user.uid,
+            "quizSets",
+            id,
+            "attempts"
+          )
+        );
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+          const newAttempt = {
+            id: doc.id,
+            ...doc.data(),
+            quizId: id,
+          };
+          newAttemptList.push(newAttempt);
+        });
+        setAttempts(newAttemptList);
+      };
+      getAttempts(user);
     }
   }, [id, user, loading, navigate]);
 

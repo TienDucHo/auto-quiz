@@ -118,7 +118,7 @@ const NewAttempt = () => {
       const questionsJSONString = `[${questionList.join(",")}]`;
       try {
         const questions = JSON.parse(questionsJSONString);
-        await addDoc(
+        const docRef = await addDoc(
           collection(
             db,
             "users",
@@ -134,6 +134,7 @@ const NewAttempt = () => {
           }
         );
         console.log("New attempt created");
+        navigate(`/quiz/${id}/attempt/${docRef.id}`);
       } catch (e) {
         console.log(questionsJSONString);
         console.log(e);

@@ -1,8 +1,13 @@
-import { db, auth } from "../../auth/Config";
+import { db } from "../../auth/Config";
 import { doc, getDoc } from "@firebase/firestore";
+import { getAuth } from "@firebase/auth";
+
+const auth = getAuth();
 
 export async function quizLoader({ params }) {
-  if (!auth.currentUser) return {};
+  if (!auth.currentUser) {
+    return {};
+  }
   const docSnapshot = await getDoc(
     doc(db, "users", auth.currentUser.uid, "quizSets", params.quizId)
   );
@@ -20,5 +25,5 @@ export async function quizLoader({ params }) {
 }
 
 export async function attemptLoader({ params }) {
-  return { name: params.attemptId };
+  return { quizId: params.quizId, attemptId: params.attemptId };
 }
