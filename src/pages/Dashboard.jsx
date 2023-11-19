@@ -21,17 +21,12 @@ const auth = getAuth();
 const Dashboard = () => {
     const navigate = useNavigate()
     const [user] = useAuthState(auth);
+    const curUser = auth.currentUser;
 
     useEffect(() => {
         if (!user) navigate("/")
     }, [user, navigate])
 
-    // console.log(JSON.stringify(user));
-    // const displayName = user.displayName;
-    // const email = user.email;
-    // const photoURL = user.photoURL;
-
-    // handle Google Sign out
     const handleClick = () => {
         signOut(auth).then(() => {
             navigate("/sign-in")
@@ -42,7 +37,7 @@ const Dashboard = () => {
     }
 
     return <div className="bg-black p-12 flex flex-col gap-y-12 md:gap-y-16">
-        <NavBar onClick={handleClick} />
+        <NavBar onClick={handleClick} profilePic={curUser.photoURL} />
         <div className="text-secondary font-bold flex justify-between">
             <Link to="/dashboard" className="text-3xl lg:text-4xl hover:text-accent transition ease-in-out">Dashboard</Link>
             {/* icon, text, onClick, style, textStyle */}
