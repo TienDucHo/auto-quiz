@@ -27,7 +27,7 @@ export function Button({ icon, text, onClick, style, textStyle }) {
   return (
     <button
       className={twMerge(
-        "flex items-center justify-center gap-2 rounded-2xl px-6 py-2  active:brightness-75",
+        "flex items-center justify-center gap-2 rounded-2xl px-6 py-2 active:brightness-75",
         buttonType,
         textStyle === "bold" ? "font-bold" : ""
       )}
