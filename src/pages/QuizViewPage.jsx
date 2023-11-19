@@ -33,23 +33,25 @@ export default function QuizViewPage() {
     return (
         <div className="p-12 h-screen flex flex-col gap-y-12 text-white">
             <NavBar />
-            <div className="grid grid-cols-2 w-full h-full">
-                <div className="flex flex-col gap-y-8 justify-center w-full">
-                    <p className="text-secondary font-bold text-4xl lg:text-5xl">{quizName}</p>
-                    <div className="flex flex-col gap-y-2 text-lg lg:text-xl">
-                        {fields.map((field, index) => {
-                            return <div key={index} className="flex items-center gap-x-4">
-                                {field.icon}
-                                <p>{field.text}</p>
-                            </div>
-                        })}
+            <div className="md:grid md:grid-cols-2 w-full h-full flex flex-col gap-y-8 items-center justify-center">
+                <div className="flex md:flex-col gap-y-8 md:justify-center w-full">
+                    <div className="flex flex-col w-full gap-y-8">
+                        <p className="text-secondary font-bold text-4xl lg:text-5xl">{quizName}</p>
+                        <div className="flex flex-col gap-y-2 text-lg lg:text-xl">
+                            {fields.map((field, index) => {
+                                return <div key={index} className="flex items-center gap-x-4">
+                                    {field.icon}
+                                    <p>{field.text}</p>
+                                </div>
+                            })}
+                        </div>
                     </div>
-                    <div className="flex justify-between md:w-[50%] gap-x-6 md:gap-x-8">
-                        <button className="w-full rounded-2xl border border-secondary py-3 px-8 hover:bg-primary hover:text-white hover:border-primary">Save</button>
-                        <button className="w-full rounded-2xl bg-secondary text-black py-3 px-8 hover:bg-primary hover:text-white hover:border-accent">Submit</button>
+                    <div className="w-full flex flex-col md:flex-row gap-y-4 items-end md:justify-between md:w-[50%] gap-x-6 md:gap-x-8">
+                        <button className="w-[8rem] md:w-full rounded-2xl border border-secondary py-3 px-8 hover:bg-primary hover:text-white hover:border-primary">Save</button>
+                        <button className="w-[8rem] md:w-full rounded-2xl bg-secondary text-black py-3 px-8 hover:bg-primary hover:text-white hover:border-accent">Submit</button>
                     </div>
                 </div>
-                <div className="flex items-center justify-center">
+                <div className="flex items-center justify-end w-full">
                     <QuestionPage list={["France", "USA", "Denmark", "Germany"]} question="Who participated in the Vietname War" questionIndex={1} />
                 </div>
             </div>
