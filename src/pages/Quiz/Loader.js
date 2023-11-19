@@ -18,6 +18,7 @@ export async function quizLoader({ params }) {
     return {};
   }
 }
+
 export async function attemptLoader({ params }) {
   return { name: params.attemptId };
 }
