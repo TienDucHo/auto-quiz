@@ -73,7 +73,7 @@ const QuizSetDisplay = ({
   return (
     <div
       onClick={() => {
-        navigate(`/quiz/${quizName}`);
+        if (!isActive) navigate(`/quiz/${quizName}`);
       }}
       className={`min-h-[16rem] rounded-2xl text-white font-bold text-lg lg:text-xl w-full flex items-center justify-center bg-primary transition  ease-in-out duration-300 relative cursor-pointer ${
         !isActive ? "hover:bg-secondary hover:text-black" : ""
