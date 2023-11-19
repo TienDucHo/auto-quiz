@@ -14,7 +14,12 @@ import { NavBar } from "../components/NavBar";
 
 const auth = getAuth();
 
+/**
+ * New Attempt page component.
+ * @returns {JSX.Element} New Attempt JSX element.
+ */
 const NewAttempt = () => {
+    // TODO: PUSH NUMBER OF QUESTIONS AND TIMER TO FIREBASE
     const [numQuestions, setNumQuestions] = useState(10);
     const [time, setTime] = useState(0);
     const [user, loading] = useAuthState(auth);
