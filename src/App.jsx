@@ -7,11 +7,12 @@ import {
 //#endregion
 
 //#region pages
-import { quizLoader } from "./pages/Quiz/Loader";
+import { attemptLoader, quizLoader } from "./pages/Quiz/Loader";
 import Home from "./pages/Home";
 import SignIn from "./pages/SignIn";
 import Dashboard from "./pages/Dashboard";
 import Summary from "./pages/Quiz/Summary";
+import NewAttempt from "./pages/NewAttempt";
 //#endregion
 
 const router = createBrowserRouter([
@@ -31,6 +32,12 @@ const router = createBrowserRouter([
     path: "/quiz/:quizId",
     element: <Summary />,
     loader: quizLoader,
+
+  },
+  {
+    path: "/quiz/:quizId/:attemptId",
+    element: <NewAttempt />,
+    loader: attemptLoader
   },
 ]);
 

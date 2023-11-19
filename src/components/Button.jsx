@@ -10,7 +10,7 @@ Button.propTypes = {
   textStyle: string,
 };
 
-export function Button({ icon, text, onClick, style, textStyle }) {
+export function Button({ icon, text, onClick, style, textStyle, className }) {
   let buttonType = "";
   switch (style) {
     case "primary":
@@ -28,6 +28,7 @@ export function Button({ icon, text, onClick, style, textStyle }) {
   return (
     <button
       className={twMerge(
+        className,
         "flex items-center justify-center gap-2 rounded-2xl px-6 py-2 active:brightness-75",
         buttonType,
         textStyle === "bold" ? "font-bold" : ""
