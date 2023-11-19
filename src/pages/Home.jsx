@@ -1,5 +1,5 @@
 //#region import
-import { Fragment, useEffect } from "react";
+import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 //#region images
 import HeroImage from "../assets/hero.svg";
@@ -215,7 +215,7 @@ export default function Home() {
 
       {sections.map((elem, id) => {
         return (
-          <Fragment key={id} className="flex flex-col items-center">
+          <div key={id} className="flex flex-col items-center">
             <motion.svg
               width="220"
               height="220"
@@ -250,7 +250,7 @@ export default function Home() {
               viewport={{ once: true }}>
               <Section title={elem.title} body={elem.body} />
             </motion.div>
-          </Fragment>
+          </div>
         );
       })}
     </div>
