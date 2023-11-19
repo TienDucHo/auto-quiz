@@ -2,7 +2,7 @@ import { NavBar } from "../../components/NavBar";
 import { Button } from "../../components/Button";
 import { FaPlus, FaChevronLeft } from "react-icons/fa6";
 import { useLoaderData } from "react-router";
-import { bool, string, number } from "prop-types";
+import { bool, string, number, arrayOf, object } from "prop-types";
 import { twMerge } from "tailwind-merge";
 
 AttemptRow.propTypes = {
@@ -10,7 +10,7 @@ AttemptRow.propTypes = {
   index: number,
   attemptName: string,
   attemptScore: string,
-  attemptNumQuestions: string,
+  attemptNumQuestions: number,
 };
 
 function AttemptRow({
@@ -46,7 +46,7 @@ function AttemptRow({
 }
 
 AttemptTable.propTypes = {
-  attempts: [],
+  attempts: arrayOf(object),
 };
 
 function AttemptTable({ attempts }) {

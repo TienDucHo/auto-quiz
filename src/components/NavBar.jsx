@@ -1,14 +1,25 @@
 import { Button } from "./Button";
 import { FaArrowRightFromBracket } from "react-icons/fa6";
 import AppLogo from "./AppLogo";
-import PropTypes from "prop-types";
+import { getAuth, signOut } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 
-NavBar.propTypes = {
-  onClick: PropTypes.func.isRequired,
-  profilePic: PropTypes.string,
-};
+const auth = getAuth();
 
-export function NavBar({ onClick, profilePic }) {
+export function NavBar() {
+  const navigate = useNavigate();
+  const curUser = auth.currentUser;
+
+  const handleClick = () => {
+    signOut(auth)
+      .then(() => {
+        navigate("/sign-in");
+      })
+      .catch((error) => {
+        console.log("Error code", error.code);
+        console.log("Error message", error.message);
+      });
+  };
   return (
     <nav className="flex justify-between items-center">
       <AppLogo variant={"light"} />
@@ -16,13 +27,13 @@ export function NavBar({ onClick, profilePic }) {
         <Button
           text="Logout"
           icon={<FaArrowRightFromBracket />}
-          onClick={onClick}
+          onClick={handleClick}
           style={"transparent"}
         />
         {/* Avatar */}
         <img
           className="flex items-center justify-center w-14 rounded-full bg-secondary"
-          src={profilePic}
+          src={curUser.photoURL}
           alt="Profile picture"
         ></img>
       </div>
