@@ -6,7 +6,13 @@ import { FaEdit } from "react-icons/fa";
 import { useState } from "react";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
+import { getAuth } from "@firebase/auth";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { db } from "../auth/Config";
+import { doc, deleteDoc } from "@firebase/firestore";
 //#endregion
+
+const auth = getAuth();
 
 /**
  * Component for displaying a quiz set.
@@ -14,12 +20,36 @@ import { useNavigate } from "react-router-dom";
  * @component
  * @param {Object} props - The component props.
  * @param {string} props.quizName - The name of the quiz set.
+ * @param {string} props.id - The id of the quiz set.
+ * @param {func} props.setQuizSets - The function to update the quiz set list
+ * @param {number} props.index - The index in side the quiz set list
+ * @param {array} props.quizSets - The parent's quiz set list
  * @returns {JSX.Element} The rendered component.
  */
-const QuizSetDisplay = ({ quizName }) => {
+const QuizSetDisplay = ({
+  quizName,
+  id,
+  index,
+  quizSets,
+  setQuizSets,
+}) => {
   const navigate = useNavigate();
+  const [user] = useAuthState(auth);
   const [isActive, setIsActive] = useState(false);
   const [renameWanted, setRenameWanted] = useState(false);
+
+  // const handleRename = () => {};
+
+  const handleDelete = (e) => {
+    e.stopPropagation();
+    const deleteQuiz = async (user) => {
+      await deleteDoc(doc(db, "users", user.uid, "quizSets", id));
+    };
+    deleteQuiz(user);
+    quizSets.splice(index, 1);
+    setQuizSets([...quizSets]);
+    setIsActive(false);
+  };
 
   return (
     <div
@@ -57,10 +87,7 @@ const QuizSetDisplay = ({ quizName }) => {
           </button>
           <button
             className="flex gap-x-2 items-center text-white hover:text-accent1"
-            onClick={(e) => {
-              e.stopPropagation();
-              alert("Delete in Firebase");
-            }}
+            onClick={handleDelete}
           >
             <FaTrash /> Delete
           </button>
@@ -97,7 +124,11 @@ const QuizSetDisplay = ({ quizName }) => {
 };
 
 QuizSetDisplay.propTypes = {
+  id: PropTypes.string.isRequired,
   quizName: PropTypes.string.isRequired,
+  setQuizSets: PropTypes.func.isRequired,
+  quizSets: PropTypes.array.isRequired,
+  index: PropTypes.number.isRequired,
 };
 
 export default QuizSetDisplay;
