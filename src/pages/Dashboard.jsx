@@ -44,6 +44,7 @@ const Dashboard = () => {
             <Button style="secondary" text="Add" icon={<IoAddOutline className="font-black text-2xl" />} />
         </div>
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {/* TODO: ADD DELETE AND RENAME FUNCTIONALITY */}
             <QuizSetDisplay quizName="Quiz 1" />
             <QuizSetDisplay quizName="Quiz 1" />
             <QuizSetDisplay quizName="Quiz 1" />
