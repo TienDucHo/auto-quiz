@@ -29,7 +29,7 @@ export default function QuizViewPage() {
     const [user, loading] = useAuthState(auth);
     const [curQuestion, setCurQuestion] = useState(0);
     const swiperRef = useRef(null)
-    const fields = [{ icon: <FaClock />, text: "1 hour 5 minutes" }, { icon: <FaQuestion />, text: `${curQuestion}/ 25` }]
+    const fields = [{ icon: <FaClock />, text: "1 hour 5 minutes" }, { icon: <FaQuestion />, text: "1 / 25" }]
 
 
     useEffect(() => {
@@ -55,7 +55,7 @@ export default function QuizViewPage() {
                             {fields.map((field, index) => {
                                 return <div key={index} className="flex items-center gap-x-4">
                                     {field.icon}
-                                    <p>{curQuestion}</p>
+                                    <p>{field.text}</p>
                                 </div>
                             })}
                         </div>

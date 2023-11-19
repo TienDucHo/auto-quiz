@@ -130,7 +130,6 @@ export default function Create() {
   };
 
   const handleDelete = () => {
-    console.log("Delete");
     setFile(null);
     setPdfContent("");
   };
@@ -170,7 +169,6 @@ export default function Create() {
           value={quizName}
           onChange={(e) => {
             setQuizName(e.target.value);
-            console.log(e.target.value);
           }}
         />
         {!file ? (

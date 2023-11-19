@@ -1,5 +1,5 @@
 import { twMerge } from "tailwind-merge";
-import { node, string, func } from "prop-types";
+import { node, string, func, bool } from "prop-types";
 
 Button.propTypes = {
   className: string,
@@ -8,6 +8,8 @@ Button.propTypes = {
   onClick: func,
   style: string,
   textStyle: string,
+  type: string,
+  disable: bool,
 };
 
 export function Button({
@@ -16,7 +18,9 @@ export function Button({
   text,
   onClick,
   style,
+  type,
   textStyle,
+  disable,
 }) {
   let buttonType = "";
   switch (style) {
@@ -32,15 +36,21 @@ export function Button({
         "bg-secondary text-primary  hover:bg-primary hover:text-secondary";
       break;
   }
+  if (disable) {
+    buttonType =
+      "opacity-25 active:brightness-100 hover:cursor-not-allowed";
+  }
   return (
     <button
       className={twMerge(
-        className,
         "flex items-center justify-center gap-2 rounded-2xl px-6 py-2 active:brightness-75",
         buttonType,
-        textStyle === "bold" ? "font-bold" : ""
+        textStyle === "bold" ? "font-bold" : "",
+        className
       )}
+      type={type}
       onClick={onClick}
+      disabled={disable}
     >
       {icon ? icon : <></>}
       {text}
