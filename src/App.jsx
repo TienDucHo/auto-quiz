@@ -41,11 +41,6 @@ const router = createBrowserRouter([
     loader: quizLoader,
   },
   {
-<<<<<<< HEAD
-    path: "/quiz-view-page",
-    element: <QuizViewPage />,
-
-=======
     path: "/quiz/:quizId/:attemptId",
     element: <NewAttempt />,
     loader: attemptLoader,
@@ -54,7 +49,6 @@ const router = createBrowserRouter([
     path: "/quiz/:quizId/attempt-create",
     element: <NewAttempt />,
     loader: attemptLoader,
->>>>>>> ef1eaa29055a0fd09ffa2fa30ca2111ff1ada47d
   },
 ]);
 
