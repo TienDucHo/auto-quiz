@@ -2,12 +2,6 @@
 import { useEffect, useState } from "react";
 import { useLoaderData, useNavigate } from "react-router-dom";
 import { getAuth } from "firebase/auth";
-<<<<<<< HEAD
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { FaClock, FaQuestion, FaChevronLeft, FaChevronRight } from "react-icons/fa6";
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { motion } from "framer-motion";
-=======
 import { useAuthState } from "react-firebase-hooks/auth";
 import { Button } from "../components/Button";
 import {
@@ -16,7 +10,6 @@ import {
   FaChevronLeft,
   FaChevronRight,
 } from "react-icons/fa6";
->>>>>>> 8574c16 (Finished but cannot save quiz attempt yet)
 
 // Import Swiper styles
 import "swiper/css";
