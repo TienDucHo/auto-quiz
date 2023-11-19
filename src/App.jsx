@@ -15,6 +15,7 @@ import Dashboard from "./pages/Dashboard";
 import Create from "./pages/Quiz/Create";
 import Summary from "./pages/Quiz/Summary";
 import NewAttempt from "./pages/NewAttempt";
+import QuizViewPage from "./pages/QuizViewPage";
 //#endregion
 
 const router = createBrowserRouter([
@@ -44,6 +45,10 @@ const router = createBrowserRouter([
     path: "/quiz/:quizId/:attemptId",
     element: <NewAttempt />,
     loader: attemptLoader,
+  },
+  {
+    path: "/quiz/:quizId/:attemptId/view",
+    element: <QuizViewPage />
   },
   {
     path: "/quiz/:quizId/attempt-create",
