@@ -12,7 +12,7 @@ export function NavBar({ onClick, profilePic }) {
   return (
     <nav className="flex justify-between items-center">
       <AppLogo variant={"light"} />
-      <div className="buttonContainer flex gap-x-4 opacity-70">
+      <div className="buttonContainer flex gap-x-4">
         <Button
           text="Logout"
           icon={<FaArrowRightFromBracket />}
