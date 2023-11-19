@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import { Button } from "../components/Button";
 import { db } from "../auth/Config";
 import { collection, addDoc } from "@firebase/firestore";
+import generateQuiz from "../utils/OpenAI";
 
 dayjs.extend(customParseFormat);
 //#endregion
@@ -29,8 +30,9 @@ const NewAttempt = () => {
   const [time, setTime] = useState(0);
   const navigate = useNavigate();
   const [disableSubmit, setDisableSubmit] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [user, loading] = useAuthState(auth);
-  const { id } = useLoaderData();
+  const { id, textContent } = useLoaderData();
 
   useEffect(() => {
     if (loading) return;
@@ -106,15 +108,40 @@ const NewAttempt = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setSubmitting(true);
     const addNewAttempt = async () => {
-      await addDoc(
-        collection(db, "users", user.uid, "quizSets", id, "attempts"),
-        {
-          numQuestions: numQuestions,
-          time: time,
-        }
+      let generatedQuestions = await generateQuiz(
+        numQuestions,
+        textContent
       );
+      let questionList = generatedQuestions.split("\n");
+      const questionsJSONString = `[${questionList.join(",")}]`;
+      try {
+        const questions = JSON.parse(questionsJSONString);
+        await addDoc(
+          collection(
+            db,
+            "users",
+            user.uid,
+            "quizSets",
+            id,
+            "attempts"
+          ),
+          {
+            numQuestions: numQuestions,
+            time: time,
+            questions: questions,
+          }
+        );
+        console.log("New attempt created");
+      } catch (e) {
+        console.log(questionsJSONString);
+        console.log(e);
+      } finally {
+        setSubmitting(false);
+      }
     };
+
     addNewAttempt();
   };
 
@@ -210,10 +237,10 @@ const NewAttempt = () => {
                 }}
               />
               <Button
-                text={"Submit"}
+                text={submitting ? "Submitting..." : "Submit"}
                 className={"w-full"}
                 onClick={handleSubmit}
-                disable={disableSubmit}
+                disable={disableSubmit || submitting}
               />
               {/* <button className="w-full rounded-2xl border border-secondary py-3 px-8 hover:bg-primary hover:text-white hover:border-primary">Cancel</button>
                     <button className="w-full rounded-2xl bg-secondary text-black py-3 px-8 hover:bg-primary hover:text-white hover:border-accent">Create</button> */}

@@ -5,8 +5,7 @@ name: Deploy to Firebase Hosting on PR
 "on": pull_request
 env:
   VITE_FIREBASE_CONFIG: ${{ secrets.VITE_FIREBASE_CONFIG}}
-  VITE_AZURE_API_KEY: ${{ secrets.VITE_AZURE_API_KEY}}
-  VITE_OPEN_AI_CLIENT: ${{ secrets.VITE_OPEN_AI_CLIENT}}
+  VITE_OPEN_AI_API_KEY: ${{ secrets.VITE_OPEN_AI_API_KEY}}
 jobs:
   build_and_preview:
     if: "${{ github.event.pull_request.head.repo.full_name == github.repository }}"
@@ -21,5 +20,4 @@ jobs:
           projectId: auto-quiz-eba1c
         env:
           VITE_FIREBASE_CONFIG: ${{ secrets.VITE_FIREBASE_CONFIG}}
-          VITE_AZURE_API_KEY: ${{ secrets.VITE_AZURE_API_KEY}}
-          VITE_OPEN_AI_CLIENT: ${{ secrets.VITE_OPEN_AI_CLIENT}}
+          VITE_OPEN_AI_API_KEY: ${{ secrets.VITE_OPEN_AI_API_KEY}}
