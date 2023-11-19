@@ -7,6 +7,14 @@ import { useState } from "react";
 import PropTypes from "prop-types";
 //#endregion
 
+/**
+ * Component for displaying a quiz set.
+ *
+ * @component
+ * @param {Object} props - The component props.
+ * @param {string} props.quizName - The name of the quiz set.
+ * @returns {JSX.Element} The rendered component.
+ */
 const QuizSetDisplay = ({ quizName }) => {
     const [isActive, setIsActive] = useState(false);
     const [renameWanted, setRenameWanted] = useState(false);

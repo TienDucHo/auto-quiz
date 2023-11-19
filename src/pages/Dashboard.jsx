@@ -23,6 +23,9 @@ const Dashboard = () => {
     const [user] = useAuthState(auth);
     const curUser = auth.currentUser;
 
+    // TODO: GET QUIZ SETS FROM FIREBASE
+    const quizSetList = ["Quiz 1", "Quiz 2", "Quiz 3", "Quiz 4", "Quiz 5"]
+
     useEffect(() => {
         if (!user) navigate("/")
     }, [user, navigate])
@@ -45,10 +48,10 @@ const Dashboard = () => {
         </div>
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {/* TODO: ADD DELETE AND RENAME FUNCTIONALITY */}
-            <QuizSetDisplay quizName="Quiz 1" />
-            <QuizSetDisplay quizName="Quiz 1" />
-            <QuizSetDisplay quizName="Quiz 1" />
-            <QuizSetDisplay quizName="Quiz 1" />
+
+            {quizSetList.map((quizName, index) => {
+                return <QuizSetDisplay key={index} quizName={quizName} />
+            })}
         </div>
     </div>
 }
