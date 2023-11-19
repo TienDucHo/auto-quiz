@@ -125,17 +125,18 @@ const attempts = [
 ];
 
 export default function Summary() {
-  const { name } = useLoaderData();
+  const { id, name } = useLoaderData();
   const [user, loading] = useAuthState(auth);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (loading) return;
+    if (!id) navigate("/");
     if (!user) {
       console.log("Haiz");
       navigate("/");
     }
-  }, [user, loading, navigate]);
+  }, [id, user, loading, navigate]);
 
   return (
     <div className="py-4 px-12 min-h-[100dvh] bg-black text-white flex flex-col gap-12">
@@ -163,6 +164,9 @@ export default function Summary() {
           text={"New Attempt"}
           icon={<FaPlus />}
           style={"secondary"}
+          onClick={() => {
+            navigate(`/quiz/${id}/attempt-create`);
+          }}
         />
       </motion.div>
       {/* Attempt Table */}

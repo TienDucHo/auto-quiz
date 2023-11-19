@@ -39,12 +39,16 @@ const router = createBrowserRouter([
     path: "/quiz/:quizId",
     element: <Summary />,
     loader: quizLoader,
-
   },
   {
     path: "/quiz/:quizId/:attemptId",
     element: <NewAttempt />,
-    loader: attemptLoader
+    loader: attemptLoader,
+  },
+  {
+    path: "/quiz/:quizId/attempt-create",
+    element: <NewAttempt />,
+    loader: attemptLoader,
   },
 ]);
 
