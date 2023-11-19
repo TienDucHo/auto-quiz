@@ -15,7 +15,11 @@ export default {
     fontFamily: {
       sans: ["Nunito", "sans-serif"],
     },
-    extend: {},
+    extend: {
+      screens: {
+        xsm: "360px",
+      },
+    },
   },
   plugins: [],
 };

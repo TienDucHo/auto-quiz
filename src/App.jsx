@@ -4,13 +4,15 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
+
 //#endregion
 
 //#region pages
-import { attemptLoader, quizLoader } from "./pages/Quiz/Loader";
+import { quizLoader, attemptLoader } from "./pages/Quiz/Loader";
 import Home from "./pages/Home";
 import SignIn from "./pages/SignIn";
 import Dashboard from "./pages/Dashboard";
+import Create from "./pages/Quiz/Create";
 import Summary from "./pages/Quiz/Summary";
 import NewAttempt from "./pages/NewAttempt";
 //#endregion
@@ -28,6 +30,11 @@ const router = createBrowserRouter([
     path: "/dashboard",
     element: <Dashboard />,
   },
+  {
+    path: "/quiz-create",
+    element: <Create />,
+  },
+
   {
     path: "/quiz/:quizId",
     element: <Summary />,

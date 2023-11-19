@@ -1,0 +1,8 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="lucide:file">
+<g id="Group">
+<path id="Vector" d="M72.5 10H30C27.3478 10 24.8043 11.0536 22.9289 12.9289C21.0536 14.8043 20 17.3478 20 20V100C20 102.652 21.0536 105.196 22.9289 107.071C24.8043 108.946 27.3478 110 30 110H90C92.6522 110 95.1957 108.946 97.0711 107.071C98.9464 105.196 100 102.652 100 100V37.5L72.5 10Z" stroke="#9AC5D3" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_2" d="M70 10V40H100" stroke="#9AC5D3" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+</g>
+</svg>

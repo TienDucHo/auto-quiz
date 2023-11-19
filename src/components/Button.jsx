@@ -10,7 +10,14 @@ Button.propTypes = {
   textStyle: string,
 };
 
-export function Button({ icon, text, onClick, style, textStyle, className }) {
+export function Button({
+  className,
+  icon,
+  text,
+  onClick,
+  style,
+  textStyle,
+}) {
   let buttonType = "";
   switch (style) {
     case "primary":
