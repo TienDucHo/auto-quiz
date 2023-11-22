@@ -1,209 +1,150 @@
 //#region imports
-import { useEffect, useState } from "react";
-import { useLoaderData, useNavigate } from "react-router-dom";
+import { useEffect, useState, useRef } from "react";
+import { useNavigate, useLoaderData } from "react-router-dom";
 import { getAuth } from "firebase/auth";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { Button } from "../components/Button";
-import {
-  FaClock,
-  FaQuestion,
-  FaChevronLeft,
-  FaChevronRight,
-} from "react-icons/fa6";
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { FaClock, FaQuestion, FaChevronLeft, FaChevronRight } from "react-icons/fa6";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { motion } from "framer-motion";
 
 // Import Swiper styles
-import "swiper/css";
-import "swiper/css/effect-flip";
+import 'swiper/css';
+import 'swiper/css/effect-flip';
+import { EffectFlip } from 'swiper/modules';
 //#endregion
 
 //#region components
 import { NavBar } from "../components/NavBar";
-import { doc, getDoc } from "@firebase/firestore";
-import { db } from "../auth/Config";
-
+import QuestionPage from "../components/QuestionPage";
 //#endregion
 
-// Firebase
+//#region firebase
+import { db } from "../auth/Config";
+import { doc, getDoc } from "firebase/firestore";
+
+//#endregion
 
 const auth = getAuth();
 
 export default function QuizViewPage() {
-  //TODO: GET QUIZ NAME FROM FIREBASE
-  const { attemptId, quizId } = useLoaderData();
+    const { attemptId, quizId } = useLoaderData();
+    const navigate = useNavigate();
+    const [user, loading] = useAuthState(auth);
+    const swiperRef = useRef(null)
+    const [activeIndex, setActiveIndex] = useState(0)
 
-  const navigate = useNavigate();
-  const [user, loading] = useAuthState(auth);
-  const [curQuestion, setCurQuestion] = useState(0);
-  const [quizName, setQuizName] = useState("");
-  const [questions, setQuestions] = useState([]);
-  const [userAnswers, setUserAnswers] = useState([]);
-  //   const swiperRef = useRef(null);
+    // store data pulled from firebase
+    const [quizName, setQuizName] = useState("")
+    const [numQuestions, setNumQuestions] = useState(0)
+    const [questionsList, setQuestionsList] = useState([])
+    const fields = [{ icon: <FaClock />, text: "1 hour 5 minutes" }, { icon: <FaQuestion />, text: `${numQuestions}` }]
 
-  useEffect(() => {
-    if (loading) return;
-    if (!user) navigate("/");
-    else {
-      const getQuizName = async () => {
-        const docSnapshot = await getDoc(
-          doc(db, "users", user.uid, "quizSets", quizId)
-        );
-        if (docSnapshot.exists()) {
-          console.log("Document data:", docSnapshot.data());
-          setQuizName(docSnapshot.data().name);
-        } else {
-          // docSnap.data() will be undefined in this case
-          console.log("No such document!");
+    useEffect(() => {
+        if (loading) return;
+        if (!user) navigate("/");
+
+        // pull data from firebase
+        const getName = async (user) => {
+            const docSnap = await getDoc(doc(db, "users", user.uid, "quizSets", quizId));
+            if (docSnap.exists()) {
+                setQuizName(docSnap.data().name);
+            } else { console.log("No such document") }
         }
-      };
 
-      const getQuestions = async () => {
-        const docSnapshot = await getDoc(
-          doc(
-            db,
-            "users",
-            user.uid,
-            "quizSets",
-            quizId,
-            "attempts",
-            attemptId
-          )
-        );
-        if (docSnapshot.exists()) {
-          console.log("Document data:", docSnapshot.data());
-          setQuestions(docSnapshot.data().questions);
-          setUserAnswers(
-            docSnapshot.data().questions.map(() => null)
-          );
-        } else {
-          // docSnap.data() will be undefined in this case
-          console.log("No such document!");
+        const getQuestions = async (user) => {
+            const docSnap = await getDoc(doc(db, "users", user.uid, "quizSets", quizId, "attempts", attemptId));
+            if (docSnap.exists()) {
+                setNumQuestions(docSnap.data().numQuestions);
+                const questions = docSnap.data().questions.map((element, index) => ({
+                    question: element.question,
+                    answers: element.answers,
+                    index: index,
+                }));
+                setQuestionsList(questions);
+            } else { console.log("No such document") }
         }
-      };
-      getQuizName();
-      getQuestions();
-    }
-  }, [user, loading, navigate, quizId, attemptId]);
+        getName(user);
+        getQuestions(user);
+    }, [user, loading, navigate, quizId, attemptId, questionsList])
 
-  //   useEffect(() => {
-  //     if (swiperRef) {
-  //       setCurQuestion(swiperRef.current.swiper.activeIndex);
-  //       console.log(curQuestion);
-  //     }
-  //   }, [swiperRef, curQuestion]);
+    //#region animation effects
+    const containerVariants = {
+        hidden: {
+            opacity: 0,
+        },
+        visible: {
+            opacity: 1,
+            transition: {
+                delayChildren: 0.3,
+                staggerChildren: 0.3,
+            },
+        },
+    };
 
-  const fields = [
-    { icon: <FaClock />, text: "1 hour 5 minutes" },
-    {
-      icon: <FaQuestion />,
-      text: `${curQuestion + 1}/${questions.length}`,
-    },
-  ];
+    const childVariants = {
+        hidden: {
+            x: -20,
+            opacity: 0,
+        },
+        visible: {
+            x: 0,
+            opacity: 1,
+            transition: {
+                duration: 2,
+            },
+        },
+    };
+    //#endregion
 
-  const navigateQuestion = (direction) => {
-    if (
-      (direction < 0 && curQuestion > 0) ||
-      (direction > 0 && curQuestion < questions.length - 1)
-    ) {
-      setCurQuestion(curQuestion + direction);
-    }
-  };
-
-  return (
-    <div className="p-12 h-screen flex flex-col gap-y-12 text-white">
-      <NavBar />
-      {questions.length > 0 && (
-        <div className="flex flex-1 justify-between items-center p-y-2">
-          {/* Quiz Info */}
-          <div className="flex flex-col gap-y-8">
-            <div className="textInfo flex flex-col gap-y-8">
-              <h1 className="text-secondary font-bold text-4xl lg:text-5xl">
-                {quizName}
-              </h1>
-              <div className="flex flex-col gap-y-2 text-lg lg:text-xl">
-                {fields.map((field, index) => {
-                  return (
-                    <div
-                      key={index}
-                      className="flex items-center gap-x-4"
-                    >
-                      {field.icon}
-                      <p>{field.text}</p>
+    return (
+        <div className="p-12 h-screen flex flex-col gap-y-12 text-white">
+            <NavBar />
+            <div className="md:grid md:grid-cols-2 w-full h-full flex flex-col gap-y-8 items-center justify-center" >
+                <motion.div className="flex md:flex-col gap-y-8 md:justify-center w-full" variants={containerVariants} initial="hidden" animate="visible">
+                    <div className="flex flex-col w-full gap-y-8">
+                        <motion.p className="text-secondary font-bold text-4xl lg:text-5xl" variants={childVariants}>{quizName}</motion.p>
+                        <motion.div className="flex flex-col gap-y-2 text-lg lg:text-xl" variants={childVariants}>
+                            {fields.map((field, index) => {
+                                return <div key={index} className="flex items-center gap-x-4">
+                                    {field.icon}
+                                    <p>{field.text}</p>
+                                </div>
+                            })}
+                        </motion.div>
                     </div>
-                  );
-                })}
-              </div>
-            </div>
-            <div className="w-full flex md:flex-row gap-y-4 items-center md:justify-between md:w-[50%] gap-x-2 md:gap-x-4">
-              <Button
-                className={
-                  "flex-grow rounded-2xl border border-secondary py-3 px-8 hover:border-primary"
-                }
-                text={"Save"}
-                style={"transparent"}
-                onClick={() => {
-                  navigate(-1);
-                }}
-              />
-              <Button
-                className={"flex-grow py-3 px-8"}
-                text={"Submit"}
-              />
-            </div>
-          </div>
-          {/* Carousel */}
-          <div className="flex justify-center items-center gap-4">
-            <Button
-              icon={<FaChevronLeft className="text-6xl" />}
-              style={"transparent"}
-              onClick={() => {
-                navigateQuestion(-1);
-              }}
-            />
-            <div className="p-12 w-[28rem] h-[28rem] bg-primary rounded-2xl flex flex-col justify-center items-center gap-8">
-              <div className="w-full flex flex-col gap-1">
-                <h2 className="text-secondary text-2xl">
-                  Q{curQuestion + 1}
-                </h2>
-                <p className="text-white text-2xl">
-                  {questions[curQuestion].question}
-                </p>
-              </div>
-              <div className="answerContainer w-full flex flex-col justify-center items-start gap-4">
-                {questions[curQuestion].answers.map((elem, id) => {
-                  return (
-                    <div
-                      key={id}
-                      id={id}
-                      className="flex justify-start items-center gap-2"
+                    <motion.div className="w-full flex flex-col md:flex-row gap-y-4 items-end md:justify-between md:w-[50%] gap-x-6 md:gap-x-8" variants={childVariants}>
+                        <button className="w-[8rem] md:w-full rounded-2xl border border-secondary py-3 px-8 hover:bg-primary hover:text-white hover:border-primary">Save</button>
+                        <button className="w-[8rem] md:w-full rounded-2xl bg-secondary text-black py-3 px-8 hover:bg-primary hover:text-white hover:border-accent">Submit</button>
+                    </motion.div>
+                </motion.div>
+                <motion.div className="flex items-center justify-center gap-x-2 w-full h-full lg:flex-1"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1, delay: 1 }}>
+                    <FaChevronLeft className={`hidden lg:flex cursor-pointer text-5xl transition ease-linear ${activeIndex <= 0 ? "opacity-20 cursor-default" : "opacity-100"}`}
+                        onClick={() => {
+                            setActiveIndex(swiperRef.current.swiper.activeIndex - 1)
+                            swiperRef.current.swiper.slideTo(swiperRef.current.swiper.activeIndex - 1);
+                        }} />
+                    <Swiper
+                        ref={swiperRef}
+                        effect={'flip'}
+                        modules={[EffectFlip]}
+                        className="w-full lg:w-[80%] h-full flex"
+                        onSlideChange={(e) => setActiveIndex(e.activeIndex)}
                     >
-                      <input
-                        type="radio"
-                        name="answers"
-                        id={elem}
-                        onChange={(e) => {
-                          console.log(e.currentTarget.parentNode.id);
-                          let myAnswers = [...userAnswers];
-                          myAnswers[curQuestion] =
-                            e.currentTarget.parentNode.id;
-                          setUserAnswers(myAnswers);
-                        }}
-                      />{" "}
-                      <label htmlFor={elem}>{elem}</label>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-            <Button
-              icon={<FaChevronRight className="text-6xl" />}
-              style={"transparent"}
-              onClick={() => {
-                navigateQuestion(+1);
-              }}
-            />
-          </div>
-        </div>
-      )}
-    </div>
-  );
+                        {questionsList.map((question, index) => {
+                            return <SwiperSlide key={index} className="flex h-[90%] items-center justify-center">
+                                <QuestionPage list={question.answers} question={question.question} questionIndex={question.index} />
+                            </SwiperSlide>
+                        })}
+                    </Swiper>
+                    <FaChevronRight className={`hidden lg:flex cursor-pointer text-5xl transition ease-linear ${activeIndex >= questionsList.length - 1 ? "opacity-20 cursor-default" : "opacity-100"}`} onClick={() => {
+                        setActiveIndex(swiperRef.current.swiper.activeIndex + 1)
+                        swiperRef.current.swiper.slideTo(swiperRef.current.swiper.activeIndex + 1);
+                    }} />
+                </motion.div>
+            </div >
+        </div >
+    )
 }
