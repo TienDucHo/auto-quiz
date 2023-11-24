@@ -1,19 +1,23 @@
 //#region imports
 import PropTypes from 'prop-types';
+import { getAuth } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { useEffect } from 'react';
 //#endregion
+
+const auth = getAuth()
 
 const QuestionPage = ({ list, question, questionIndex }) => {
     const answersList = list
     const questionNum = questionIndex
+    const navigate = useNavigate();
+    const [user, loading] = useAuthState(auth)
 
-    const selectedRadio = () => {
-        var selValue = document.querySelector(`input[name="${questionNum}"]:checked`);
-        if (selValue != null) {
-            console.log(selValue.value);
-        }
-    }
-
-    selectedRadio()
+    useEffect(() => {
+        if (loading) return;
+        if (!user) navigate("/");
+    }, [user, loading, navigate])
 
     return <div className="flex w-full h-full justify-center flex-col gap-y-8 bg-primary px-8 py-16 rounded-2xl">
         <div className="flex flex-col gap-y-2">

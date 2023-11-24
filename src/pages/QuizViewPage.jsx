@@ -20,7 +20,7 @@ import QuestionPage from "../components/QuestionPage";
 
 //#region firebase
 import { db } from "../auth/Config";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 
 //#endregion
 
@@ -32,6 +32,7 @@ export default function QuizViewPage() {
     const [user, loading] = useAuthState(auth);
     const swiperRef = useRef(null)
     const [activeIndex, setActiveIndex] = useState(0)
+    const [answersList, setAnswersList] = useState([])
 
     // store data pulled from firebase
     const [quizName, setQuizName] = useState("")
@@ -39,33 +40,55 @@ export default function QuizViewPage() {
     const [questionsList, setQuestionsList] = useState([])
     const fields = [{ icon: <FaClock />, text: "1 hour 5 minutes" }, { icon: <FaQuestion />, text: `${numQuestions}` }]
 
+    // submit
+    const handleSubmit = async () => {
+        let myList = []
+        for (let i = 0; i < numQuestions; i++) {
+            var selValue = document.querySelector(`input[name="${i}"]:checked`);
+            selValue === null ? myList.push(null) : myList.push(selValue.value)
+        }
+
+        const docRef = doc(db, "users", user.uid, "quizSets", quizId, "attempts", attemptId);
+        await updateDoc(docRef, {
+            userAnswers: answersList
+        })
+    }
+
     useEffect(() => {
         if (loading) return;
         if (!user) navigate("/");
+        else {
+            // pull data from firebase
+            const getName = async (user) => {
+                const docSnap = await getDoc(doc(db, "users", user.uid, "quizSets", quizId));
+                if (docSnap.exists()) {
+                    setQuizName(docSnap.data().name);
+                } else { console.log("No such document") }
+            }
 
-        // pull data from firebase
-        const getName = async (user) => {
-            const docSnap = await getDoc(doc(db, "users", user.uid, "quizSets", quizId));
-            if (docSnap.exists()) {
-                setQuizName(docSnap.data().name);
-            } else { console.log("No such document") }
-        }
+            const getQuestions = async (user) => {
+                const docRef = doc(db, "users", user.uid, "quizSets", quizId, "attempts", attemptId);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    setNumQuestions(docSnap.data().numQuestions);
+                    const questions = docSnap.data().questions.map((element, index) => ({
+                        question: element.question,
+                        answers: element.answers,
+                        index: index,
+                    }));
+                    setQuestionsList(questions);
 
-        const getQuestions = async (user) => {
-            const docSnap = await getDoc(doc(db, "users", user.uid, "quizSets", quizId, "attempts", attemptId));
-            if (docSnap.exists()) {
-                setNumQuestions(docSnap.data().numQuestions);
-                const questions = docSnap.data().questions.map((element, index) => ({
-                    question: element.question,
-                    answers: element.answers,
-                    index: index,
-                }));
-                setQuestionsList(questions);
-            } else { console.log("No such document") }
+                    // update userAnswers
+                    if (docSnap.data().userAnswers != null) {
+                        setAnswersList(docSnap.data().userAnswers)
+                    }
+
+                } else { console.log("No such document") }
+            }
+            getName(user);
+            getQuestions(user);
         }
-        getName(user);
-        getQuestions(user);
-    }, [user, loading, navigate, quizId, attemptId, questionsList])
+    }, [user, loading, navigate, quizId, attemptId, answersList])
 
     //#region animation effects
     const containerVariants = {
@@ -114,7 +137,7 @@ export default function QuizViewPage() {
                     </div>
                     <motion.div className="w-full flex flex-col md:flex-row gap-y-4 items-end md:justify-between md:w-[50%] gap-x-6 md:gap-x-8" variants={childVariants}>
                         <button className="w-[8rem] md:w-full rounded-2xl border border-secondary py-3 px-8 hover:bg-primary hover:text-white hover:border-primary">Save</button>
-                        <button className="w-[8rem] md:w-full rounded-2xl bg-secondary text-black py-3 px-8 hover:bg-primary hover:text-white hover:border-accent">Submit</button>
+                        <button className="w-[8rem] md:w-full rounded-2xl bg-secondary text-black py-3 px-8 hover:bg-primary hover:text-white hover:border-accent" onClick={handleSubmit}>Submit</button>
                     </motion.div>
                 </motion.div>
                 <motion.div className="flex items-center justify-center gap-x-2 w-full h-full lg:flex-1"
