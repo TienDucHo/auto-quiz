@@ -8,7 +8,7 @@ import { useEffect } from 'react';
 
 const auth = getAuth()
 
-const QuestionPage = ({ list, question, questionIndex }) => {
+const QuestionPage = ({ list, question, questionIndex, userAnswers }) => {
     const answersList = list
     const questionNum = questionIndex
     const navigate = useNavigate();
@@ -27,7 +27,7 @@ const QuestionPage = ({ list, question, questionIndex }) => {
         <div className="flex flex-col gap-y-4 lg:gap-y-6 text-lg">
             {answersList.map((answer, index) => {
                 return <div key={index} className="flex gap-x-4 items-center" name="form">
-                    <input className="w-6 h-6 rounded-2xl cursor-pointer bg-white appearance-none checked:bg-accent" type="radio" id={answer} name={questionNum} value={answer} />
+                    <input className="w-6 h-6 rounded-2xl cursor-pointer bg-white appearance-none checked:bg-accent" type="radio" id={answer} name={questionNum} value={answer} defaultChecked={userAnswers != null && userAnswers[questionIndex] === answer} />
                     <label htmlFor="child">{answer}</label>
                 </div>
             })}
@@ -39,7 +39,8 @@ const QuestionPage = ({ list, question, questionIndex }) => {
 QuestionPage.propTypes = {
     list: PropTypes.array.isRequired,
     question: PropTypes.string.isRequired,
-    questionIndex: PropTypes.number.isRequired
+    questionIndex: PropTypes.number.isRequired,
+    userAnswers: PropTypes.array
 };
 
 export default QuestionPage;

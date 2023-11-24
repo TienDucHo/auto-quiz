@@ -42,15 +42,33 @@ export default function QuizViewPage() {
 
     // submit
     const handleSubmit = async () => {
+        alert("Your answers have been submitted!")
         let myList = []
         for (let i = 0; i < numQuestions; i++) {
             var selValue = document.querySelector(`input[name="${i}"]:checked`);
+            console.log(document.querySelector(`input[name="${i}"]:checked`))
             selValue === null ? myList.push(null) : myList.push(selValue.value)
         }
 
         const docRef = doc(db, "users", user.uid, "quizSets", quizId, "attempts", attemptId);
         await updateDoc(docRef, {
-            userAnswers: answersList
+            userAnswers: myList
+        })
+    }
+
+    // handle save
+    const handleSave = async () => {
+        alert("Your answers have been saved!")
+        let myList = []
+        for (let i = 0; i < numQuestions; i++) {
+            var selValue = document.querySelector(`input[name="${i}"]:checked`);
+            console.log(document.querySelector(`input[name="${i}"]:checked`))
+            selValue === null ? myList.push(null) : myList.push(selValue.value)
+        }
+
+        const docRef = doc(db, "users", user.uid, "quizSets", quizId, "attempts", attemptId);
+        await updateDoc(docRef, {
+            userAnswers: myList
         })
     }
 
@@ -88,7 +106,7 @@ export default function QuizViewPage() {
             getName(user);
             getQuestions(user);
         }
-    }, [user, loading, navigate, quizId, attemptId, answersList])
+    }, [user, loading, navigate, quizId, attemptId])
 
     //#region animation effects
     const containerVariants = {
@@ -136,7 +154,7 @@ export default function QuizViewPage() {
                         </motion.div>
                     </div>
                     <motion.div className="w-full flex flex-col md:flex-row gap-y-4 items-end md:justify-between md:w-[50%] gap-x-6 md:gap-x-8" variants={childVariants}>
-                        <button className="w-[8rem] md:w-full rounded-2xl border border-secondary py-3 px-8 hover:bg-primary hover:text-white hover:border-primary">Save</button>
+                        <button className="w-[8rem] md:w-full rounded-2xl border border-secondary py-3 px-8 hover:bg-primary hover:text-white hover:border-primary" onClick={handleSave}>Save</button>
                         <button className="w-[8rem] md:w-full rounded-2xl bg-secondary text-black py-3 px-8 hover:bg-primary hover:text-white hover:border-accent" onClick={handleSubmit}>Submit</button>
                     </motion.div>
                 </motion.div>
@@ -156,11 +174,12 @@ export default function QuizViewPage() {
                         className="w-full lg:w-[80%] h-full flex"
                         onSlideChange={(e) => setActiveIndex(e.activeIndex)}
                     >
-                        {questionsList.map((question, index) => {
-                            return <SwiperSlide key={index} className="flex h-[90%] items-center justify-center">
-                                <QuestionPage list={question.answers} question={question.question} questionIndex={question.index} />
+                        {questionsList.map((question, questionIndex) => {
+                            return <SwiperSlide key={questionIndex} className="flex h-[90%] items-center justify-center">
+                                <QuestionPage list={question.answers} question={question.question} questionIndex={question.index} userAnswers={answersList} />
                             </SwiperSlide>
                         })}
+
                     </Swiper>
                     <FaChevronRight className={`hidden lg:flex cursor-pointer text-5xl transition ease-linear ${activeIndex >= questionsList.length - 1 ? "opacity-20 cursor-default" : "opacity-100"}`} onClick={() => {
                         setActiveIndex(swiperRef.current.swiper.activeIndex + 1)
