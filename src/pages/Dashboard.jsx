@@ -112,7 +112,6 @@ const Dashboard = () => {
           initial="hidden"
           animate="visible"
         >
-          {/* TODO: ADD DELETE AND RENAME FUNCTIONALITY */}
 
           {quizSets.map(({ name, id }, index) => {
             return (

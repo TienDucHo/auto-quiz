@@ -54,8 +54,8 @@ function AttemptRow({
         isHeader
           ? "border-secondary border-[1px]"
           : index % 2 === 0
-          ? "bg-primary text-secondary"
-          : "bg-secondary text-primary",
+            ? "bg-primary text-secondary"
+            : "bg-secondary text-primary",
         !isHeader && "hover:brightness-125 active:brightness-75"
       )}
       onClick={() => {

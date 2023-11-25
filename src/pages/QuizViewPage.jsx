@@ -40,23 +40,32 @@ export default function QuizViewPage() {
     const [questionsList, setQuestionsList] = useState([])
     const fields = [{ icon: <FaClock />, text: "1 hour 5 minutes" }, { icon: <FaQuestion />, text: `${numQuestions}` }]
 
-    // submit
+    //#region sumbission
     const handleSubmit = async () => {
         alert("Your answers have been submitted!")
         let myList = []
         for (let i = 0; i < numQuestions; i++) {
             var selValue = document.querySelector(`input[name="${i}"]:checked`);
-            console.log(document.querySelector(`input[name="${i}"]:checked`))
             selValue === null ? myList.push(null) : myList.push(selValue.value)
         }
 
         const docRef = doc(db, "users", user.uid, "quizSets", quizId, "attempts", attemptId);
+        // calculate score
+        let score = 0
+        for (let i = 0; i < numQuestions; i++) {
+            if (myList[i] === questionsList[i].rightAnswer) {
+                score = score + 1
+            }
+        }
+        // update data
         await updateDoc(docRef, {
-            userAnswers: myList
+            userAnswers: myList,
+            score: score,
         })
+        navigate(`/quiz/${quizId}`)
     }
-
-    // handle save
+    //#endregion
+    //#region save
     const handleSave = async () => {
         alert("Your answers have been saved!")
         let myList = []
@@ -65,12 +74,13 @@ export default function QuizViewPage() {
             console.log(document.querySelector(`input[name="${i}"]:checked`))
             selValue === null ? myList.push(null) : myList.push(selValue.value)
         }
-
         const docRef = doc(db, "users", user.uid, "quizSets", quizId, "attempts", attemptId);
         await updateDoc(docRef, {
             userAnswers: myList
         })
+        navigate(`/quiz/${quizId}`)
     }
+    //#endregion
 
     useEffect(() => {
         if (loading) return;
@@ -93,6 +103,7 @@ export default function QuizViewPage() {
                         question: element.question,
                         answers: element.answers,
                         index: index,
+                        rightAnswer: element.rightAnswer,
                     }));
                     setQuestionsList(questions);
 
