@@ -64,7 +64,7 @@ function AttemptRow({
       variants={rowVariants}
     >
       <li className="w-20 text-left">
-        {isHeader ? "Attempt" : `Attempt ${index}`}
+        {isHeader ? "Attempt" : `Attempt ${index + 1}`}
       </li>
       <li className="w-20 text-center">
         {isHeader ? "Score" : attemptScore}
@@ -108,6 +108,7 @@ function AttemptTable({ attempts }) {
             <AttemptRow
               key={id}
               index={id}
+              attemptScore={elem.score}
               {...elem}
               attemptNumQuestions={elem.questions.length}
             />
