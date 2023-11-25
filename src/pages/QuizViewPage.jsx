@@ -36,6 +36,7 @@ export default function QuizViewPage() {
 
     // store data pulled from firebase
     const [quizName, setQuizName] = useState("")
+    const [quizScore, setQuizScore] = useState()
     const [numQuestions, setNumQuestions] = useState(0)
     const [questionsList, setQuestionsList] = useState([])
     const fields = [{ icon: <FaClock />, text: "1 hour 5 minutes" }, { icon: <FaQuestion />, text: `${numQuestions}` }]
@@ -99,6 +100,7 @@ export default function QuizViewPage() {
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) {
                     setNumQuestions(docSnap.data().numQuestions);
+                    setQuizScore(docSnap.data().score);
                     const questions = docSnap.data().questions.map((element, index) => ({
                         question: element.question,
                         answers: element.answers,
@@ -187,7 +189,7 @@ export default function QuizViewPage() {
                     >
                         {questionsList.map((question, questionIndex) => {
                             return <SwiperSlide key={questionIndex} className="flex h-[90%] items-center justify-center">
-                                <QuestionPage list={question.answers} question={question.question} questionIndex={question.index} userAnswers={answersList} />
+                                <QuestionPage list={question.answers} question={question.question} questionIndex={question.index} userAnswers={answersList} modifiable={quizScore != null ? false : true} />
                             </SwiperSlide>
                         })}
 
