@@ -20,6 +20,7 @@
 
   input:checked {
     background-color: #159ab7;
+    visibility: visible;
   }
 
   input::invalid {

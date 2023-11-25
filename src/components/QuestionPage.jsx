@@ -21,13 +21,13 @@ const QuestionPage = ({ list, question, questionIndex, userAnswers }) => {
 
     return <div className="flex w-full h-full justify-center flex-col gap-y-8 bg-primary px-8 py-16 rounded-2xl">
         <div className="flex flex-col gap-y-2">
-            <p className="text-xl lg:text-2xl text-secondary">Q{questionNum + 1}</p>
-            <p className="text-xl lg:text-2xl">{question}</p>
+            <p className="text-xl lg:text-2xl text-secondary font-bold">Q{questionNum + 1}</p>
+            <p className="text-lg md:text-xl lg:text-2xl">{question}</p>
         </div>
-        <div className="flex flex-col gap-y-4 lg:gap-y-6 text-lg">
+        <div className="flex flex-col gap-y-4 lg:gap-y-6 md:text-lg">
             {answersList.map((answer, index) => {
                 return <div key={index} className="flex gap-x-4 items-center" name="form">
-                    <input className="w-6 h-6 rounded-2xl cursor-pointer bg-white appearance-none checked:bg-accent" type="radio" id={answer} name={questionNum} value={answer} defaultChecked={userAnswers != null && userAnswers[questionIndex] === answer} />
+                    <input className="w-8 h-8 rounded-full cursor-pointer bg-white appearance-none checked:bg-accent" type="radio" id={answer} name={questionNum} value={answer} defaultChecked={userAnswers != null && userAnswers[questionIndex] === answer} onClick={(e) => e.target.checked = true} />
                     <label htmlFor="child">{answer}</label>
                 </div>
             })}
