@@ -4,6 +4,8 @@ import { useNavigate, useLoaderData } from "react-router-dom";
 import { getAuth } from "firebase/auth";
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { FaClock, FaQuestion, FaChevronLeft, FaChevronRight } from "react-icons/fa6";
+import { LuCheckCircle } from "react-icons/lu";
+import { IoReturnDownBackOutline } from "react-icons/io5";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { motion } from "framer-motion";
 
@@ -36,11 +38,11 @@ export default function QuizViewPage() {
 
     // store data pulled from firebase
     const [quizName, setQuizName] = useState("")
-    const [quizScore, setQuizScore] = useState()
+    const [quizScore, setQuizScore] = useState(false)
     const [numQuestions, setNumQuestions] = useState(0)
     const [questionsList, setQuestionsList] = useState([])
     const fields = [{ icon: <FaClock />, text: "1 hour 5 minutes" }, { icon: <FaQuestion />, text: `${numQuestions}` }]
-
+    const afterFields = [{ icon: <LuCheckCircle />, text: `${quizScore}` }, { icon: <IoReturnDownBackOutline />, text: "Back" }]
     //#region sumbission
     const handleSubmit = async () => {
         alert("Your answers have been submitted!")
@@ -158,18 +160,29 @@ export default function QuizViewPage() {
                     <div className="flex flex-col w-full gap-y-8">
                         <motion.p className="text-secondary font-bold text-4xl lg:text-5xl" variants={childVariants}>{quizName}</motion.p>
                         <motion.div className="flex flex-col gap-y-2 text-lg lg:text-xl" variants={childVariants}>
-                            {fields.map((field, index) => {
+                            {quizScore === false || quizScore === undefined ? fields.map((field, index) => {
                                 return <div key={index} className="flex items-center gap-x-4">
                                     {field.icon}
                                     <p>{field.text}</p>
                                 </div>
-                            })}
+                            }) : <motion.div className="flex flex-col items-start gap-y-4">
+                                {afterFields.map((field, index) => {
+                                    return index === 0 ? <div key={index} className="flex items-center gap-x-4">
+                                        {field.icon}
+                                        <p>{field.text}</p>
+                                    </div> : <button key={index} className="flex items-center gap-x-4 hover:text-accent transition duration-100" onClick={() => navigate(`/quiz/${quizId}`)}>
+                                        {field.icon}
+                                        <p>{field.text}</p>
+                                    </button>
+                                })}
+                            </motion.div>}
                         </motion.div>
                     </div>
-                    <motion.div className="w-full flex flex-col lg:flex-row gap-y-4 items-end md:justify-between md:w-[50%] gap-x-6 md:gap-x-8" variants={childVariants}>
-                        <button className="w-[8rem] lg:w-full rounded-2xl border border-secondary py-3 px-8 hover:bg-primary hover:text-white hover:border-primary" onClick={handleSave}>Save</button>
-                        <button className="w-[8rem] lg:w-full rounded-2xl bg-secondary text-black py-3 px-8 hover:bg-primary hover:text-white hover:border-accent" onClick={handleSubmit}>Submit</button>
-                    </motion.div>
+                    {quizScore === false || quizScore === undefined ?
+                        <motion.div className="w-full flex flex-col lg:flex-row gap-y-4 items-end md:justify-between md:w-[50%] gap-x-6 md:gap-x-8" variants={childVariants}>
+                            <button className="w-32 rounded-2xl border border-secondary py-3 px-8 hover:bg-primary hover:text-white hover:border-primary" onClick={handleSave}>Save</button>
+                            <button className="w-32 rounded-2xl bg-secondary text-black py-3 px-8 hover:bg-primary hover:text-white hover:border-accent" onClick={handleSubmit}>Submit</button>
+                        </motion.div> : <></>}
                 </motion.div>
                 <motion.div className="col-span-2 flex items-center justify-center gap-x-2 w-full h-full lg:flex-1"
                     initial={{ opacity: 0, y: 20 }}
@@ -184,7 +197,7 @@ export default function QuizViewPage() {
                         ref={swiperRef}
                         effect={'flip'}
                         modules={[EffectFlip]}
-                        className="w-full lg:w-[80%] max-h-[20rem] flex items-center justify-center"
+                        className="w-full lg:w-[80%] max-h-[20rem] flex items-center justify-center my-28"
                         onSlideChange={(e) => setActiveIndex(e.activeIndex)}
                     >
                         {questionsList.map((question, questionIndex) => {
