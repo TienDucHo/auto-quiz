@@ -50,7 +50,7 @@ function AttemptRow({
   return (
     <motion.ul
       className={twMerge(
-        "flex justify-between items-center rounded-2xl px-6 py-4",
+        "flex justify-between items-center rounded-2xl px-6 py-4 cursor-pointer",
         isHeader
           ? "border-secondary border-[1px]"
           : index % 2 === 0
@@ -144,6 +144,8 @@ export default function Summary() {
             "attempts"
           )
         );
+
+        // WHAT HAPPENED
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
           const newAttempt = {

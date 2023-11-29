@@ -184,11 +184,11 @@ export default function QuizViewPage() {
                         ref={swiperRef}
                         effect={'flip'}
                         modules={[EffectFlip]}
-                        className="w-full lg:w-[80%] h-full flex"
+                        className="w-full lg:w-[80%] max-h-[20rem] flex items-center justify-center"
                         onSlideChange={(e) => setActiveIndex(e.activeIndex)}
                     >
                         {questionsList.map((question, questionIndex) => {
-                            return <SwiperSlide key={questionIndex} className="flex h-[90%] items-center justify-center">
+                            return <SwiperSlide key={questionIndex} className="flex h-[90%] max-h-[40rem] items-center justify-center">
                                 <QuestionPage list={question.answers} question={question.question} questionIndex={question.index} userAnswers={answersList} modifiable={quizScore != null ? false : true} />
                             </SwiperSlide>
                         })}
