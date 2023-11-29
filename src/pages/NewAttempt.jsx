@@ -117,7 +117,7 @@ const NewAttempt = () => {
       let questionList = generatedQuestions.split("\n");
       const questionsJSONString = `[${questionList.join(",")}]`;
       try {
-        const questions = JSON.parse(questionsJSONString);
+        let questions = JSON.parse(questionsJSONString);
         const docRef = await addDoc(
           collection(
             db,
@@ -131,6 +131,7 @@ const NewAttempt = () => {
             numQuestions: numQuestions,
             time: time,
             questions: questions,
+            createdAt: new Date(),
           }
         );
         console.log("New attempt created");
@@ -186,11 +187,10 @@ const NewAttempt = () => {
             <motion.input
               type="text"
               placeholder="Number of Questions (default 10, max 60)"
-              className={`bg-black w-full outline-none border-2 border-dotted px-8 py-3 rounded-2xl  ${
-                numQuestions != false
-                  ? "text-secondary border-secondary"
-                  : "text-accent1 border-accent1 placeholder-accent1"
-              }`}
+              className={`bg-black w-full outline-none border-2 border-dotted px-8 py-3 rounded-2xl  ${numQuestions != false
+                ? "text-secondary border-secondary"
+                : "text-accent1 border-accent1 placeholder-accent1"
+                }`}
               onChange={handleQuestionsInput}
               variants={childVariants}
             />
@@ -204,20 +204,18 @@ const NewAttempt = () => {
                 maxLength={8}
                 step="1"
                 placeholder="hh:mm:ss (Optional)"
-                className={`bg-black w-full text-secondary outline-none border-2 border-dotted px-8 py-3 rounded-2xl ${
-                  time != false || time === 0
-                    ? "border-secondary"
-                    : "border-accent1 text-accent1 placeholder:bg-accent1"
-                }`}
+                className={`bg-black w-full text-secondary outline-none border-2 border-dotted px-8 py-3 rounded-2xl ${time != false || time === 0
+                  ? "border-secondary"
+                  : "border-accent1 text-accent1 placeholder:bg-accent1"
+                  }`}
                 onChange={handleTimeInput}
               />
               <p
-                className={`font-medium text-accent1 text-base lg:text-lg ${
-                  (time != false || time === 0) &&
+                className={`font-medium text-accent1 text-base lg:text-lg ${(time != false || time === 0) &&
                   numQuestions != false
-                    ? "opacity-0"
-                    : ""
-                }`}
+                  ? "opacity-0"
+                  : ""
+                  }`}
               >
                 Invalid input
               </p>

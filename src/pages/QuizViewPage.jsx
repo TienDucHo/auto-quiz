@@ -52,7 +52,7 @@ export default function QuizViewPage() {
             selValue === null ? myList.push(null) : myList.push(selValue.value)
         }
 
-        const docRef = doc(db, "users", user.uid, "quizSets", quizId, "attempts", attemptId);
+        console.log(myList)
         // calculate score
         let score = 0
         for (let i = 0; i < numQuestions; i++) {
@@ -60,6 +60,7 @@ export default function QuizViewPage() {
                 score = score + 1
             }
         }
+        const docRef = doc(db, "users", user.uid, "quizSets", quizId, "attempts", attemptId);
         // update data
         await updateDoc(docRef, {
             userAnswers: myList,

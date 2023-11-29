@@ -9,7 +9,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useEffect } from "react";
 import { getAuth } from "firebase/auth";
 import { motion, AnimatePresence } from "framer-motion";
-import { collection, query, getDocs } from "firebase/firestore";
+import { collection, query, getDocs, orderBy } from "firebase/firestore";
 import { db } from "../../auth/Config";
 import { useState } from "react";
 
@@ -142,7 +142,7 @@ export default function Summary() {
             "quizSets",
             id,
             "attempts"
-          )
+          ), orderBy("createdAt", "asc")
         );
 
         // WHAT HAPPENED
