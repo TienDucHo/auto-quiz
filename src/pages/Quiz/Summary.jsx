@@ -129,7 +129,6 @@ export default function Summary() {
     if (loading) return;
     if (!id) navigate("/");
     if (!user) {
-      console.log("Haiz");
       navigate("/");
     } else {
       const getAttempts = async (user) => {
@@ -162,7 +161,7 @@ export default function Summary() {
   }, [id, user, loading, navigate]);
 
   return (
-    <div className="py-4 px-12 min-h-[100dvh] bg-black text-white flex flex-col gap-12">
+    <div className="py-4 px-8 md:px-12 min-h-[100dvh] bg-black text-white flex flex-col gap-12">
       {/* Nav Bar */}
       <NavBar />
       {/* Header */}

@@ -156,7 +156,7 @@ export default function QuizViewPage() {
             <NavBar />
             <div className="lg:grid lg:grid-cols-3 w-full h-full flex flex-col gap-y-8 items-center justify-center" >
                 <motion.div className="flex lg:flex-col gap-y-8 md:justify-center w-full" variants={containerVariants} initial="hidden" animate="visible">
-                    <div className="flex flex-col w-full gap-y-8">
+                    <div className="flex justify-between items-center md:items-start lg:flex-col w-full gap-y-8">
                         <motion.p className="text-secondary font-bold text-4xl lg:text-5xl" variants={childVariants}>{quizName}</motion.p>
                         <motion.div className="flex flex-col gap-y-2 text-lg lg:text-xl" variants={childVariants}>
                             {quizScore === null ? fields.map((field, index) => {
@@ -183,7 +183,7 @@ export default function QuizViewPage() {
                             <button className="w-32 rounded-2xl bg-secondary text-black py-3 px-8 hover:bg-primary hover:text-white hover:border-accent" onClick={handleSubmit}>Submit</button>
                         </motion.div> : <></>}
                 </motion.div>
-                <motion.div className="col-span-2 flex items-center justify-center gap-x-2 w-full h-full lg:flex-1"
+                <motion.div className="col-span-2 flex gap-y-8 flex-col lg:flex-row items-center justify-center gap-x-2 w-full h-full lg:flex-1"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 1, delay: 1 }}>
@@ -196,13 +196,13 @@ export default function QuizViewPage() {
                         ref={swiperRef}
                         effect={'flip'}
                         modules={[EffectFlip]}
-                        className="w-full lg:w-[80%] max-h-[20rem] flex items-center justify-center my-28"
+                        className="w-full lg:w-[80%] h-full max-h-[40rem] flex items-center justify-center"
                         onSlideChange={(e) => setActiveIndex(e.activeIndex)}
                         simulateTouch={false}
                     >
                         {questionsList.map((question, questionIndex) => {
-                            return <SwiperSlide key={questionIndex} className="flex h-[90%] z-[100] max-h-[40rem] items-center justify-center">
-                                <QuestionPage list={question.answers} question={question.question} questionIndex={question.index} userAnswers={answersList} modifiable={parseInt(quizScore) === quizScore ? false : true} />
+                            return <SwiperSlide key={questionIndex} className="flex h-full z-[100] items-center justify-center">
+                                <QuestionPage list={question.answers} question={question.question} questionIndex={question.index} userAnswers={answersList} rightAnswer={question.rightAnswer} modifiable={parseInt(quizScore) === quizScore ? false : true} />
                             </SwiperSlide>
                         })}
 
@@ -211,6 +211,18 @@ export default function QuizViewPage() {
                         setActiveIndex(swiperRef.current.swiper.activeIndex + 1)
                         swiperRef.current.swiper.slideTo(swiperRef.current.swiper.activeIndex + 1);
                     }} />
+
+                    <div className="flex z-[100]">
+                        <FaChevronLeft className={`flex lg:hidden cursor-pointer text-2xl transition ease-linear ${activeIndex <= 0 ? "opacity-20 cursor-default" : "opacity-100"}`}
+                            onClick={() => {
+                                setActiveIndex(swiperRef.current.swiper.activeIndex - 1)
+                                swiperRef.current.swiper.slideTo(swiperRef.current.swiper.activeIndex - 1);
+                            }} />
+                        <FaChevronRight className={`flex lg:hidden cursor-pointer text-2xl transition ease-linear ${activeIndex >= questionsList.length - 1 ? "opacity-20 cursor-default" : "opacity-100"}`} onClick={() => {
+                            setActiveIndex(swiperRef.current.swiper.activeIndex + 1)
+                            swiperRef.current.swiper.slideTo(swiperRef.current.swiper.activeIndex + 1);
+                        }} />
+                    </div>
                 </motion.div>
             </div >
         </div >
