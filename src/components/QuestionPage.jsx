@@ -28,8 +28,8 @@ const QuestionPage = ({ list, question, questionIndex, userAnswers, modifiable }
             {answersList.map((answer, index) => {
                 return <div key={index} className="flex gap-x-4 items-center" name="form">
                     <input className="w-8 h-8 rounded-full cursor-pointer bg-white appearance-none checked:bg-accent" type="radio" id={answer} name={questionNum} value={answer} defaultChecked={userAnswers != null && userAnswers[questionIndex] === answer} onClick={(e) => e.target.checked = true}
-                        disabled={!modifiable} />
-                    <label htmlFor="child">{answer}</label>
+                        disabled={!modifiable} onChange={() => { }} />
+                    <label htmlFor={answer}>{answer}</label>
                 </div>
             })}
         </div>

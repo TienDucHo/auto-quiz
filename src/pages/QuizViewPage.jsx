@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate, useLoaderData } from "react-router-dom";
 import { getAuth } from "firebase/auth";
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { FaClock, FaQuestion, FaChevronLeft, FaChevronRight } from "react-icons/fa6";
+import { FaQuestion, FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import { LuCheckCircle } from "react-icons/lu";
 import { IoReturnDownBackOutline } from "react-icons/io5";
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -38,21 +38,19 @@ export default function QuizViewPage() {
 
     // store data pulled from firebase
     const [quizName, setQuizName] = useState("")
-    const [quizScore, setQuizScore] = useState(false)
+    const [quizScore, setQuizScore] = useState(null)
     const [numQuestions, setNumQuestions] = useState(0)
     const [questionsList, setQuestionsList] = useState([])
-    const fields = [{ icon: <FaClock />, text: "1 hour 5 minutes" }, { icon: <FaQuestion />, text: `${numQuestions}` }]
-    const afterFields = [{ icon: <LuCheckCircle />, text: `${quizScore}` }, { icon: <IoReturnDownBackOutline />, text: "Back" }]
+    const fields = [{ icon: <FaQuestion />, text: `${numQuestions}` }]
+    const afterFields = [{ icon: <LuCheckCircle />, text: `${quizScore} / ${numQuestions}` }, { icon: <IoReturnDownBackOutline />, text: "Back" }]
+
     //#region sumbission
     const handleSubmit = async () => {
-        alert("Your answers have been submitted!")
         let myList = []
         for (let i = 0; i < numQuestions; i++) {
             var selValue = document.querySelector(`input[name="${i}"]:checked`);
             selValue === null ? myList.push(null) : myList.push(selValue.value)
         }
-
-        console.log(myList)
         // calculate score
         let score = 0
         for (let i = 0; i < numQuestions; i++) {
@@ -71,11 +69,10 @@ export default function QuizViewPage() {
     //#endregion
     //#region save
     const handleSave = async () => {
-        alert("Your answers have been saved!")
         let myList = []
         for (let i = 0; i < numQuestions; i++) {
             var selValue = document.querySelector(`input[name="${i}"]:checked`);
-            console.log(document.querySelector(`input[name="${i}"]:checked`))
+            // console.log(document.querySelector(`input[name="${i}"]:checked`))
             selValue === null ? myList.push(null) : myList.push(selValue.value)
         }
         const docRef = doc(db, "users", user.uid, "quizSets", quizId, "attempts", attemptId);
@@ -90,7 +87,6 @@ export default function QuizViewPage() {
         if (loading) return;
         if (!user) navigate("/");
         else {
-            // pull data from firebase
             const getName = async (user) => {
                 const docSnap = await getDoc(doc(db, "users", user.uid, "quizSets", quizId));
                 if (docSnap.exists()) {
@@ -104,6 +100,7 @@ export default function QuizViewPage() {
                 if (docSnap.exists()) {
                     setNumQuestions(docSnap.data().numQuestions);
                     setQuizScore(docSnap.data().score);
+
                     const questions = docSnap.data().questions.map((element, index) => ({
                         question: element.question,
                         answers: element.answers,
@@ -123,6 +120,7 @@ export default function QuizViewPage() {
             getQuestions(user);
         }
     }, [user, loading, navigate, quizId, attemptId])
+
 
     //#region animation effects
     const containerVariants = {
@@ -161,7 +159,7 @@ export default function QuizViewPage() {
                     <div className="flex flex-col w-full gap-y-8">
                         <motion.p className="text-secondary font-bold text-4xl lg:text-5xl" variants={childVariants}>{quizName}</motion.p>
                         <motion.div className="flex flex-col gap-y-2 text-lg lg:text-xl" variants={childVariants}>
-                            {quizScore === false || quizScore === undefined ? fields.map((field, index) => {
+                            {quizScore === null ? fields.map((field, index) => {
                                 return <div key={index} className="flex items-center gap-x-4">
                                     {field.icon}
                                     <p>{field.text}</p>
@@ -179,7 +177,7 @@ export default function QuizViewPage() {
                             </motion.div>}
                         </motion.div>
                     </div>
-                    {quizScore === false || quizScore === undefined ?
+                    {quizScore === null ?
                         <motion.div className="w-full flex flex-col lg:flex-row gap-y-4 items-end md:justify-between md:w-[50%] gap-x-6 md:gap-x-8" variants={childVariants}>
                             <button className="w-32 rounded-2xl border border-secondary py-3 px-8 hover:bg-primary hover:text-white hover:border-primary" onClick={handleSave}>Save</button>
                             <button className="w-32 rounded-2xl bg-secondary text-black py-3 px-8 hover:bg-primary hover:text-white hover:border-accent" onClick={handleSubmit}>Submit</button>
@@ -200,10 +198,11 @@ export default function QuizViewPage() {
                         modules={[EffectFlip]}
                         className="w-full lg:w-[80%] max-h-[20rem] flex items-center justify-center my-28"
                         onSlideChange={(e) => setActiveIndex(e.activeIndex)}
+                        simulateTouch={false}
                     >
                         {questionsList.map((question, questionIndex) => {
-                            return <SwiperSlide key={questionIndex} className="flex h-[90%] max-h-[40rem] items-center justify-center">
-                                <QuestionPage list={question.answers} question={question.question} questionIndex={question.index} userAnswers={answersList} modifiable={quizScore != null ? false : true} />
+                            return <SwiperSlide key={questionIndex} className="flex h-[90%] z-[100] max-h-[40rem] items-center justify-center">
+                                <QuestionPage list={question.answers} question={question.question} questionIndex={question.index} userAnswers={answersList} modifiable={parseInt(quizScore) === quizScore ? false : true} />
                             </SwiperSlide>
                         })}
 

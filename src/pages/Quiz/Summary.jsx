@@ -52,14 +52,14 @@ function AttemptRow({
       className={twMerge(
         "flex justify-between items-center rounded-2xl px-6 py-4 cursor-pointer",
         isHeader
-          ? "border-secondary border-[1px]"
+          ? "border-secondary text-secondary border-[1px] cursor-default"
           : index % 2 === 0
             ? "bg-primary text-secondary"
             : "bg-secondary text-primary",
         !isHeader && "hover:brightness-125 active:brightness-75"
       )}
       onClick={() => {
-        navigate(`/quiz/${quizId}/attempt/${id}`);
+        !isHeader ? navigate(`/quiz/${quizId}/attempt/${id}`) : null;
       }}
       variants={rowVariants}
     >

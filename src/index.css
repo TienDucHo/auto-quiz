@@ -18,11 +18,6 @@
     opacity: 1; /* Firefox */
   }
 
-  input:checked {
-    background-color: #159ab7;
-    visibility: visible;
-  }
-
   input::invalid {
     border: 2px solid #f77474;
   }
