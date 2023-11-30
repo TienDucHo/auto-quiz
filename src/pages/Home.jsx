@@ -96,9 +96,9 @@ const sections = [
             style="primary"
             textStyle="bold"
             icon={<FaCoffee />}
-            onClick={() => {}}
+            onClick={() => { }}
           />
-          <span className="opacity-70">We appreciate it</span>
+          <span className="opacity-70">Just kidding ;&#41;</span>
         </div>
       </div>
     ),
