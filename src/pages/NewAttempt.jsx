@@ -1,8 +1,6 @@
 //#region imports
 import { useLoaderData, useNavigate } from "react-router";
 import { useState, useEffect } from "react";
-import dayjs from 'dayjs/esm/index.js'
-import customParseFormat from "dayjs/plugin/customParseFormat";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { getAuth } from "firebase/auth";
 import { motion } from "framer-motion";
@@ -10,8 +8,6 @@ import { Button } from "../components/Button";
 import { db } from "../auth/Config";
 import { collection, addDoc } from "@firebase/firestore";
 import generateQuiz from "../utils/OpenAI";
-
-dayjs.extend(customParseFormat);
 //#endregion
 
 //#region components
