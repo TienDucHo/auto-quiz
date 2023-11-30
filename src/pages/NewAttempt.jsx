@@ -1,8 +1,8 @@
 //#region imports
 import { useLoaderData, useNavigate } from "react-router";
 import { useState, useEffect } from "react";
-import dayjs from "dayjs";
-import * as customParseFormat from "dayjs/plugin/customParseFormat";
+import dayjs from 'dayjs/esm/index.js'
+import customParseFormat from "dayjs/plugin/customParseFormat";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { getAuth } from "firebase/auth";
 import { motion } from "framer-motion";
