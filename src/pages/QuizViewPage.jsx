@@ -1,209 +1,230 @@
 //#region imports
-import { useEffect, useState } from "react";
-import { useLoaderData, useNavigate } from "react-router-dom";
+import { useEffect, useState, useRef } from "react";
+import { useNavigate, useLoaderData } from "react-router-dom";
 import { getAuth } from "firebase/auth";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { Button } from "../components/Button";
-import {
-  FaClock,
-  FaQuestion,
-  FaChevronLeft,
-  FaChevronRight,
-} from "react-icons/fa6";
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { FaQuestion, FaChevronLeft, FaChevronRight } from "react-icons/fa6";
+import { LuCheckCircle } from "react-icons/lu";
+import { IoReturnDownBackOutline } from "react-icons/io5";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { motion } from "framer-motion";
 
 // Import Swiper styles
-import "swiper/css";
-import "swiper/css/effect-flip";
+import 'swiper/css';
+import 'swiper/css/effect-flip';
+import { EffectFlip } from 'swiper/modules';
 //#endregion
 
 //#region components
 import { NavBar } from "../components/NavBar";
-import { doc, getDoc } from "@firebase/firestore";
-import { db } from "../auth/Config";
-
+import QuestionPage from "../components/QuestionPage";
 //#endregion
 
-// Firebase
+//#region firebase
+import { db } from "../auth/Config";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+
+//#endregion
 
 const auth = getAuth();
 
 export default function QuizViewPage() {
-  //TODO: GET QUIZ NAME FROM FIREBASE
-  const { attemptId, quizId } = useLoaderData();
+    const { attemptId, quizId } = useLoaderData();
+    const navigate = useNavigate();
+    const [user, loading] = useAuthState(auth);
+    const swiperRef = useRef(null)
+    const [activeIndex, setActiveIndex] = useState(0)
+    const [answersList, setAnswersList] = useState([])
 
-  const navigate = useNavigate();
-  const [user, loading] = useAuthState(auth);
-  const [curQuestion, setCurQuestion] = useState(0);
-  const [quizName, setQuizName] = useState("");
-  const [questions, setQuestions] = useState([]);
-  const [userAnswers, setUserAnswers] = useState([]);
-  //   const swiperRef = useRef(null);
+    // store data pulled from firebase
+    const [quizName, setQuizName] = useState("")
+    const [quizScore, setQuizScore] = useState(null)
+    const [numQuestions, setNumQuestions] = useState(0)
+    const [questionsList, setQuestionsList] = useState([])
+    const fields = [{ icon: <FaQuestion />, text: `${numQuestions}` }]
+    const afterFields = [{ icon: <LuCheckCircle />, text: `${quizScore} / ${numQuestions}` }, { icon: <IoReturnDownBackOutline />, text: "Back" }]
 
-  useEffect(() => {
-    if (loading) return;
-    if (!user) navigate("/");
-    else {
-      const getQuizName = async () => {
-        const docSnapshot = await getDoc(
-          doc(db, "users", user.uid, "quizSets", quizId)
-        );
-        if (docSnapshot.exists()) {
-          console.log("Document data:", docSnapshot.data());
-          setQuizName(docSnapshot.data().name);
-        } else {
-          // docSnap.data() will be undefined in this case
-          console.log("No such document!");
+    //#region sumbission
+    const handleSubmit = async () => {
+        let myList = []
+        for (let i = 0; i < numQuestions; i++) {
+            var selValue = document.querySelector(`input[name="${i}"]:checked`);
+            selValue === null ? myList.push(null) : myList.push(selValue.value)
         }
-      };
-
-      const getQuestions = async () => {
-        const docSnapshot = await getDoc(
-          doc(
-            db,
-            "users",
-            user.uid,
-            "quizSets",
-            quizId,
-            "attempts",
-            attemptId
-          )
-        );
-        if (docSnapshot.exists()) {
-          console.log("Document data:", docSnapshot.data());
-          setQuestions(docSnapshot.data().questions);
-          setUserAnswers(
-            docSnapshot.data().questions.map(() => null)
-          );
-        } else {
-          // docSnap.data() will be undefined in this case
-          console.log("No such document!");
+        // calculate score
+        let score = 0
+        for (let i = 0; i < numQuestions; i++) {
+            if (myList[i] === questionsList[i].rightAnswer) {
+                score = score + 1
+            }
         }
-      };
-      getQuizName();
-      getQuestions();
+        const docRef = doc(db, "users", user.uid, "quizSets", quizId, "attempts", attemptId);
+        // update data
+        await updateDoc(docRef, {
+            userAnswers: myList,
+            score: score,
+        })
+        navigate(`/quiz/${quizId}`)
     }
-  }, [user, loading, navigate, quizId, attemptId]);
-
-  //   useEffect(() => {
-  //     if (swiperRef) {
-  //       setCurQuestion(swiperRef.current.swiper.activeIndex);
-  //       console.log(curQuestion);
-  //     }
-  //   }, [swiperRef, curQuestion]);
-
-  const fields = [
-    { icon: <FaClock />, text: "1 hour 5 minutes" },
-    {
-      icon: <FaQuestion />,
-      text: `${curQuestion + 1}/${questions.length}`,
-    },
-  ];
-
-  const navigateQuestion = (direction) => {
-    if (
-      (direction < 0 && curQuestion > 0) ||
-      (direction > 0 && curQuestion < questions.length - 1)
-    ) {
-      setCurQuestion(curQuestion + direction);
+    //#endregion
+    //#region save
+    const handleSave = async () => {
+        let myList = []
+        for (let i = 0; i < numQuestions; i++) {
+            var selValue = document.querySelector(`input[name="${i}"]:checked`);
+            // console.log(document.querySelector(`input[name="${i}"]:checked`))
+            selValue === null ? myList.push(null) : myList.push(selValue.value)
+        }
+        const docRef = doc(db, "users", user.uid, "quizSets", quizId, "attempts", attemptId);
+        await updateDoc(docRef, {
+            userAnswers: myList
+        })
+        navigate(`/quiz/${quizId}`)
     }
-  };
+    //#endregion
 
-  return (
-    <div className="p-12 h-screen flex flex-col gap-y-12 text-white">
-      <NavBar />
-      {questions.length > 0 && (
-        <div className="flex flex-1 justify-between items-center p-y-2">
-          {/* Quiz Info */}
-          <div className="flex flex-col gap-y-8">
-            <div className="textInfo flex flex-col gap-y-8">
-              <h1 className="text-secondary font-bold text-4xl lg:text-5xl">
-                {quizName}
-              </h1>
-              <div className="flex flex-col gap-y-2 text-lg lg:text-xl">
-                {fields.map((field, index) => {
-                  return (
-                    <div
-                      key={index}
-                      className="flex items-center gap-x-4"
-                    >
-                      {field.icon}
-                      <p>{field.text}</p>
+    useEffect(() => {
+        if (loading) return;
+        if (!user) navigate("/");
+        else {
+            const getName = async (user) => {
+                const docSnap = await getDoc(doc(db, "users", user.uid, "quizSets", quizId));
+                if (docSnap.exists()) {
+                    setQuizName(docSnap.data().name);
+                } else { console.log("No such document") }
+            }
+
+            const getQuestions = async (user) => {
+                const docRef = doc(db, "users", user.uid, "quizSets", quizId, "attempts", attemptId);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    setNumQuestions(docSnap.data().numQuestions);
+                    setQuizScore(docSnap.data().score);
+
+                    const questions = docSnap.data().questions.map((element, index) => ({
+                        question: element.question,
+                        answers: element.answers,
+                        index: index,
+                        rightAnswer: element.rightAnswer,
+                    }));
+                    setQuestionsList(questions);
+
+                    // update userAnswers
+                    if (docSnap.data().userAnswers != null) {
+                        setAnswersList(docSnap.data().userAnswers)
+                    }
+
+                } else { console.log("No such document") }
+            }
+            getName(user);
+            getQuestions(user);
+        }
+    }, [user, loading, navigate, quizId, attemptId])
+
+
+    //#region animation effects
+    const containerVariants = {
+        hidden: {
+            opacity: 0,
+        },
+        visible: {
+            opacity: 1,
+            transition: {
+                delayChildren: 0.3,
+                staggerChildren: 0.3,
+            },
+        },
+    };
+
+    const childVariants = {
+        hidden: {
+            x: -20,
+            opacity: 0,
+        },
+        visible: {
+            x: 0,
+            opacity: 1,
+            transition: {
+                duration: 2,
+            },
+        },
+    };
+    //#endregion
+
+    return (
+        <div className="p-12 lg:h-[100vh] flex flex-col gap-y-12 text-white">
+            <NavBar />
+            <div className="lg:grid lg:grid-cols-3 w-full h-full flex flex-col gap-y-8 items-center justify-center" >
+                <motion.div className="flex lg:flex-col gap-y-8 md:justify-center w-full" variants={containerVariants} initial="hidden" animate="visible">
+                    <div className="flex justify-between items-center md:items-start lg:flex-col w-full gap-y-8">
+                        <motion.p className="text-secondary font-bold text-4xl lg:text-5xl" variants={childVariants}>{quizName}</motion.p>
+                        <motion.div className="flex flex-col gap-y-2 text-lg lg:text-xl" variants={childVariants}>
+                            {quizScore === null ? fields.map((field, index) => {
+                                return <div key={index} className="flex items-center gap-x-4">
+                                    {field.icon}
+                                    <p>{field.text}</p>
+                                </div>
+                            }) : <motion.div className="flex flex-col items-start gap-y-4">
+                                {afterFields.map((field, index) => {
+                                    return index === 0 ? <div key={index} className="flex items-center gap-x-4">
+                                        {field.icon}
+                                        <p>{field.text}</p>
+                                    </div> : <button key={index} className="flex items-center gap-x-4 hover:text-accent transition duration-100" onClick={() => navigate(`/quiz/${quizId}`)}>
+                                        {field.icon}
+                                        <p>{field.text}</p>
+                                    </button>
+                                })}
+                            </motion.div>}
+                        </motion.div>
                     </div>
-                  );
-                })}
-              </div>
-            </div>
-            <div className="w-full flex md:flex-row gap-y-4 items-center md:justify-between md:w-[50%] gap-x-2 md:gap-x-4">
-              <Button
-                className={
-                  "flex-grow rounded-2xl border border-secondary py-3 px-8 hover:border-primary"
-                }
-                text={"Save"}
-                style={"transparent"}
-                onClick={() => {
-                  navigate(-1);
-                }}
-              />
-              <Button
-                className={"flex-grow py-3 px-8"}
-                text={"Submit"}
-              />
-            </div>
-          </div>
-          {/* Carousel */}
-          <div className="flex justify-center items-center gap-4">
-            <Button
-              icon={<FaChevronLeft className="text-6xl" />}
-              style={"transparent"}
-              onClick={() => {
-                navigateQuestion(-1);
-              }}
-            />
-            <div className="p-12 w-[28rem] h-[28rem] bg-primary rounded-2xl flex flex-col justify-center items-center gap-8">
-              <div className="w-full flex flex-col gap-1">
-                <h2 className="text-secondary text-2xl">
-                  Q{curQuestion + 1}
-                </h2>
-                <p className="text-white text-2xl">
-                  {questions[curQuestion].question}
-                </p>
-              </div>
-              <div className="answerContainer w-full flex flex-col justify-center items-start gap-4">
-                {questions[curQuestion].answers.map((elem, id) => {
-                  return (
-                    <div
-                      key={id}
-                      id={id}
-                      className="flex justify-start items-center gap-2"
+                    {quizScore === null ?
+                        <motion.div className="w-full flex flex-col lg:flex-row gap-y-4 items-end md:justify-between md:w-[50%] gap-x-6 md:gap-x-8" variants={childVariants}>
+                            <button className="w-32 rounded-2xl border border-secondary py-3 px-8 hover:bg-primary hover:text-white hover:border-primary" onClick={handleSave}>Save</button>
+                            <button className="w-32 rounded-2xl bg-secondary text-black py-3 px-8 hover:bg-primary hover:text-white hover:border-accent" onClick={handleSubmit}>Submit</button>
+                        </motion.div> : <></>}
+                </motion.div>
+                <motion.div className="col-span-2 flex gap-y-8 flex-col lg:flex-row items-center justify-center gap-x-2 w-full h-full lg:flex-1"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1, delay: 1 }}>
+                    <FaChevronLeft className={`hidden lg:flex cursor-pointer text-5xl transition ease-linear ${activeIndex <= 0 ? "opacity-20 cursor-default" : "opacity-100"}`}
+                        onClick={() => {
+                            setActiveIndex(swiperRef.current.swiper.activeIndex - 1)
+                            swiperRef.current.swiper.slideTo(swiperRef.current.swiper.activeIndex - 1);
+                        }} />
+                    <Swiper
+                        ref={swiperRef}
+                        effect={'flip'}
+                        modules={[EffectFlip]}
+                        className="w-full lg:w-[80%] h-full max-h-[40rem] flex items-center justify-center"
+                        onSlideChange={(e) => setActiveIndex(e.activeIndex)}
+                        simulateTouch={false}
                     >
-                      <input
-                        type="radio"
-                        name="answers"
-                        id={elem}
-                        onChange={(e) => {
-                          console.log(e.currentTarget.parentNode.id);
-                          let myAnswers = [...userAnswers];
-                          myAnswers[curQuestion] =
-                            e.currentTarget.parentNode.id;
-                          setUserAnswers(myAnswers);
-                        }}
-                      />{" "}
-                      <label htmlFor={elem}>{elem}</label>
+                        {questionsList.map((question, questionIndex) => {
+                            return <SwiperSlide key={questionIndex} className="flex h-full z-[100] items-center justify-center">
+                                <QuestionPage list={question.answers} question={question.question} questionIndex={question.index} userAnswers={answersList} rightAnswer={question.rightAnswer} modifiable={parseInt(quizScore) === quizScore ? false : true} />
+                            </SwiperSlide>
+                        })}
+
+                    </Swiper>
+                    <FaChevronRight className={`hidden lg:flex cursor-pointer text-5xl transition ease-linear ${activeIndex >= questionsList.length - 1 ? "opacity-20 cursor-default" : "opacity-100"}`} onClick={() => {
+                        setActiveIndex(swiperRef.current.swiper.activeIndex + 1)
+                        swiperRef.current.swiper.slideTo(swiperRef.current.swiper.activeIndex + 1);
+                    }} />
+
+                    <div className="flex z-[100]">
+                        <FaChevronLeft className={`flex lg:hidden cursor-pointer text-2xl transition ease-linear ${activeIndex <= 0 ? "opacity-20 cursor-default" : "opacity-100"}`}
+                            onClick={() => {
+                                setActiveIndex(swiperRef.current.swiper.activeIndex - 1)
+                                swiperRef.current.swiper.slideTo(swiperRef.current.swiper.activeIndex - 1);
+                            }} />
+                        <FaChevronRight className={`flex lg:hidden cursor-pointer text-2xl transition ease-linear ${activeIndex >= questionsList.length - 1 ? "opacity-20 cursor-default" : "opacity-100"}`} onClick={() => {
+                            setActiveIndex(swiperRef.current.swiper.activeIndex + 1)
+                            swiperRef.current.swiper.slideTo(swiperRef.current.swiper.activeIndex + 1);
+                        }} />
                     </div>
-                  );
-                })}
-              </div>
-            </div>
-            <Button
-              icon={<FaChevronRight className="text-6xl" />}
-              style={"transparent"}
-              onClick={() => {
-                navigateQuestion(+1);
-              }}
-            />
-          </div>
-        </div>
-      )}
-    </div>
-  );
+                </motion.div>
+            </div >
+        </div >
+    )
 }

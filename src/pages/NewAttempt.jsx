@@ -27,7 +27,6 @@ const auth = getAuth();
 const NewAttempt = () => {
   // TODO: PUSH NUMBER OF QUESTIONS AND TIMER TO FIREBASE
   const [numQuestions, setNumQuestions] = useState(10);
-  const [time, setTime] = useState(0);
   const navigate = useNavigate();
   const [disableSubmit, setDisableSubmit] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -56,13 +55,6 @@ const NewAttempt = () => {
       setNumQuestions(false);
       setDisableSubmit(true);
     }
-  };
-
-  const handleTimeInput = (e) => {
-    if (e.target.value === "") setTime(0);
-    else if (dayjs(e.target.value, "HH:mm:ss").isValid())
-      setTime(e.target.value);
-    else setTime(false);
   };
 
   // animation effects
@@ -115,9 +107,10 @@ const NewAttempt = () => {
         textContent
       );
       let questionList = generatedQuestions.split("\n");
+      console.log(questionList)
       const questionsJSONString = `[${questionList.join(",")}]`;
       try {
-        const questions = JSON.parse(questionsJSONString);
+        let questions = JSON.parse(questionsJSONString);
         const docRef = await addDoc(
           collection(
             db,
@@ -129,8 +122,9 @@ const NewAttempt = () => {
           ),
           {
             numQuestions: numQuestions,
-            time: time,
             questions: questions,
+            createdAt: new Date(),
+            score: null,
           }
         );
         console.log("New attempt created");
@@ -178,7 +172,7 @@ const NewAttempt = () => {
             </motion.p>
           </motion.div>
           <motion.form
-            className="text-secondary lg:pl-[20%] w-full flex flex-col gap-y-8 self-start lg:self-center items-center self-justify-end text-lg lg:text-xl"
+            className="text-secondary gap-y-4 lg:pl-[20%] w-full flex flex-col self-start lg:self-center items-start self-justify-end text-lg lg:text-xl"
             variants={formVariants}
             initial="hidden"
             animate="visible"
@@ -186,42 +180,19 @@ const NewAttempt = () => {
             <motion.input
               type="text"
               placeholder="Number of Questions (default 10, max 60)"
-              className={`bg-black w-full outline-none border-2 border-dotted px-8 py-3 rounded-2xl  ${
-                numQuestions != false
-                  ? "text-secondary border-secondary"
-                  : "text-accent1 border-accent1 placeholder-accent1"
-              }`}
+              className={`bg-black w-full outline-none border-2 border-dotted px-8 py-3 rounded-2xl  ${numQuestions != false
+                ? "text-secondary border-secondary"
+                : "text-accent1 border-accent1 placeholder-accent1"
+                }`}
               onChange={handleQuestionsInput}
               variants={childVariants}
             />
-
-            <motion.div
-              className="flex flex-col w-full gap-y-2"
-              variants={childVariants}
+            <motion.p
+              childVariants={childVariants}
+              className={`font-medium text-accent1 text-base lg:text-lg ${numQuestions != false ? "opacity-0" : ""}`}
             >
-              <input
-                type="text"
-                maxLength={8}
-                step="1"
-                placeholder="hh:mm:ss (Optional)"
-                className={`bg-black w-full text-secondary outline-none border-2 border-dotted px-8 py-3 rounded-2xl ${
-                  time != false || time === 0
-                    ? "border-secondary"
-                    : "border-accent1 text-accent1 placeholder:bg-accent1"
-                }`}
-                onChange={handleTimeInput}
-              />
-              <p
-                className={`font-medium text-accent1 text-base lg:text-lg ${
-                  (time != false || time === 0) &&
-                  numQuestions != false
-                    ? "opacity-0"
-                    : ""
-                }`}
-              >
-                Invalid input
-              </p>
-            </motion.div>
+              Invalid input
+            </motion.p>
 
             <motion.div
               className="flex justify-between w-full gap-x-6 md:gap-x-8"

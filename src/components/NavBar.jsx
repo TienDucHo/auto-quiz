@@ -40,7 +40,7 @@ export function NavBar() {
         {/* Avatar */}
         {curUser ? <img
           className="flex items-center justify-center w-14 rounded-full bg-secondary"
-          src={curUser.photoURL}
+          src={curUser ? curUser.photoURL : ""}
           alt="Profile picture"
         ></img> : <></>}
       </div>

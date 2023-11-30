@@ -9,7 +9,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useEffect } from "react";
 import { getAuth } from "firebase/auth";
 import { motion, AnimatePresence } from "framer-motion";
-import { collection, query, getDocs } from "firebase/firestore";
+import { collection, query, getDocs, orderBy } from "firebase/firestore";
 import { db } from "../../auth/Config";
 import { useState } from "react";
 
@@ -50,21 +50,21 @@ function AttemptRow({
   return (
     <motion.ul
       className={twMerge(
-        "flex justify-between items-center rounded-2xl px-6 py-4",
+        "flex justify-between items-center rounded-2xl px-6 py-4 cursor-pointer",
         isHeader
-          ? "border-secondary border-[1px]"
+          ? "border-secondary text-secondary border-[1px] cursor-default"
           : index % 2 === 0
-          ? "bg-primary text-secondary"
-          : "bg-secondary text-primary",
+            ? "bg-primary text-secondary"
+            : "bg-secondary text-primary",
         !isHeader && "hover:brightness-125 active:brightness-75"
       )}
       onClick={() => {
-        navigate(`/quiz/${quizId}/attempt/${id}`);
+        !isHeader ? navigate(`/quiz/${quizId}/attempt/${id}`) : null;
       }}
       variants={rowVariants}
     >
       <li className="w-20 text-left">
-        {isHeader ? "Attempt" : `Attempt ${index}`}
+        {isHeader ? "Attempt" : `Attempt ${index + 1}`}
       </li>
       <li className="w-20 text-center">
         {isHeader ? "Score" : attemptScore}
@@ -108,6 +108,7 @@ function AttemptTable({ attempts }) {
             <AttemptRow
               key={id}
               index={id}
+              attemptScore={elem.score}
               {...elem}
               attemptNumQuestions={elem.questions.length}
             />
@@ -128,7 +129,6 @@ export default function Summary() {
     if (loading) return;
     if (!id) navigate("/");
     if (!user) {
-      console.log("Haiz");
       navigate("/");
     } else {
       const getAttempts = async (user) => {
@@ -141,8 +141,10 @@ export default function Summary() {
             "quizSets",
             id,
             "attempts"
-          )
+          ), orderBy("createdAt", "asc")
         );
+
+        // WHAT HAPPENED
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
           const newAttempt = {
@@ -159,7 +161,7 @@ export default function Summary() {
   }, [id, user, loading, navigate]);
 
   return (
-    <div className="py-4 px-12 min-h-[100dvh] bg-black text-white flex flex-col gap-12">
+    <div className="py-4 px-8 md:px-12 min-h-[100dvh] bg-black text-white flex flex-col gap-12">
       {/* Nav Bar */}
       <NavBar />
       {/* Header */}
